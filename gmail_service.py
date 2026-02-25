@@ -11,11 +11,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
 def _get_client_config():
-    """
-    Load OAuth client config from Streamlit Secrets (for cloud) 
-    or from credentials.json (for local dev).
-    """
-    # Streamlit Cloud: secrets are under [google_oauth]
+    """Load OAuth client config from Streamlit Secrets or fallback to credentials.json."""
     if "google_oauth" in st.secrets:
         secret = st.secrets["google_oauth"]
         return {
@@ -24,23 +20,37 @@ def _get_client_config():
                 "client_secret": secret["client_secret"],
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-                "redirect_uris": [secret.get("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")],
+                "redirect_uris": [secret["redirect_uri"]],
             }
         }
     # Local dev fallback
     creds_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'credentials.json')
     if os.path.exists(creds_path):
         with open(creds_path) as f:
-            return json.load(f)
+            data = json.load(f)
+        # Wrap "installed" type as "web" so Flow works the same way
+        key = "web" if "web" in data else "installed"
+        cfg = data[key]
+        return {
+            "web": {
+                "client_id": cfg["client_id"],
+                "client_secret": cfg["client_secret"],
+                "auth_uri": cfg.get("auth_uri", "https://accounts.google.com/o/oauth2/auth"),
+                "token_uri": cfg.get("token_uri", "https://oauth2.googleapis.com/token"),
+                "redirect_uris": cfg.get("redirect_uris", ["http://localhost"]),
+            }
+        }
     raise FileNotFoundError(
         "No OAuth credentials found. Add [google_oauth] to Streamlit Secrets "
         "or place credentials.json in the project folder."
     )
 
 def _get_redirect_uri():
+    """Return the redirect URI — the app URL on cloud, localhost for local dev."""
     if "google_oauth" in st.secrets:
-        return st.secrets["google_oauth"].get("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")
-    return "urn:ietf:wg:oauth:2.0:oob"
+        return st.secrets["google_oauth"]["redirect_uri"]
+    # Local dev: use localhost (InstalledAppFlow style)
+    return "http://localhost"
 
 
 class GmailService:
@@ -50,46 +60,29 @@ class GmailService:
             raise ValueError("Valid credentials must be provided.")
         self.service = build('gmail', 'v1', credentials=self.creds)
 
-    # ── Step 1: Get the Google authorization URL ────────────────────────────
     @staticmethod
     def get_auth_url():
         """Return the Google OAuth URL the user must visit."""
         client_config = _get_client_config()
         redirect_uri = _get_redirect_uri()
-
-        flow = Flow.from_client_config(
-            client_config,
-            scopes=SCOPES,
-            redirect_uri=redirect_uri,
-        )
+        flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
         auth_url, _ = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true',
             prompt='select_account',
         )
-        # Store the flow state in session so Step 2 can finish it
-        st.session_state['oauth_flow_state'] = flow.state
         st.session_state['oauth_client_config'] = client_config
         return auth_url
 
-    # ── Step 2: Exchange the auth code for credentials ─────────────────────
     @staticmethod
     def exchange_code(code: str):
-        """Given the auth code from Google, return a Credentials object."""
-        client_config = st.session_state.get('oauth_client_config')
-        if not client_config:
-            client_config = _get_client_config()
-
+        """Exchange the auth code (from query params) for credentials."""
+        client_config = st.session_state.get('oauth_client_config') or _get_client_config()
         redirect_uri = _get_redirect_uri()
-        flow = Flow.from_client_config(
-            client_config,
-            scopes=SCOPES,
-            redirect_uri=redirect_uri,
-        )
+        flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
         flow.fetch_token(code=code)
         return flow.credentials
 
-    # ── Helper: Get the email address from credentials ──────────────────────
     @staticmethod
     def get_service_email(creds):
         try:
@@ -99,7 +92,6 @@ class GmailService:
         except Exception:
             return None
 
-    # ── Gmail API helpers ───────────────────────────────────────────────────
     def get_unread_messages(self, max_results=20):
         try:
             results = self.service.users().messages().list(

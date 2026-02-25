@@ -66,32 +66,45 @@ if 'user_email' not in st.session_state:
 if 'auth_url' not in st.session_state:
     st.session_state.auth_url = None
 
+# ── Auto-handle Google's redirect (code arrives as a query param) ──────────
+_params = st.query_params
+if "code" in _params and not st.session_state.authenticated:
+    _code = _params["code"]
+    try:
+        with st.spinner("Completing sign-in…"):
+            _creds = GmailService.exchange_code(_code)
+            _email = GmailService.get_service_email(_creds)
+            if _email:
+                st.session_state.gmail_service = GmailService(_creds)
+                st.session_state.user_email = _email
+                st.session_state.authenticated = True
+                st.session_state.auth_url = None
+                st.query_params.clear()   # remove ?code=... from URL
+                st.rerun()
+    except Exception as _e:
+        st.error(f"Auto sign-in failed: {_e}")
+        st.query_params.clear()
+
 def init_services():
     try:
         if st.session_state.spam_filter is None:
             with st.spinner('Loading Spam Filter Model...'):
                 st.session_state.spam_filter = SpamFilter()
-        
-        if st.session_state.gmail_service is None:
-            # Check for existing token first to avoid auto-triggering auth flow if possible
-            # or just let GmailService handle it.
-            # We'll rely on the user clicking a button to trigger 'login' which effectively just initializes the service
-            pass
-            
     except Exception as e:
         st.error(f"Error initializing services: {e}")
 
 def start_login():
-    """Step 1 — generate the Google auth URL and show it to the user."""
+    """Step 1 — redirect user to Google's auth page."""
     try:
         auth_url = GmailService.get_auth_url()
+        # Open Google's sign-in page in the same tab
+        st.markdown(f'<meta http-equiv="refresh" content="0; url={auth_url}">', unsafe_allow_html=True)
         st.session_state.auth_url = auth_url
-        st.rerun()
     except Exception as e:
         st.error(f"Could not generate login URL: {e}")
 
 def finish_login(code: str):
-    """Step 2 — exchange the code the user pasted for credentials."""
+    """Fallback: manually exchange a pasted code."""
     try:
         with st.spinner('Verifying...'):
             creds = GmailService.exchange_code(code.strip())
