@@ -63,6 +63,8 @@ if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 if 'user_email' not in st.session_state:
     st.session_state.user_email = ""
+if 'auth_url' not in st.session_state:
+    st.session_state.auth_url = None
 
 def init_services():
     try:
@@ -79,22 +81,29 @@ def init_services():
     except Exception as e:
         st.error(f"Error initializing services: {e}")
 
-def login(force_new=False):
+def start_login():
+    """Step 1 — generate the Google auth URL and show it to the user."""
     try:
-        with st.spinner('Authenticating with Google... (Check your browser)'):
-            creds = GmailService.authenticate_user(force_new=force_new)
-            if creds:
-                service = GmailService(creds)
-                email = GmailService.get_service_email(creds)
-                if email:
-                    st.session_state.gmail_service = service
-                    st.session_state.user_email = email
-                    st.session_state.authenticated = True
-                    st.success(f"Successfully authenticated as {email}")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("Failed to retrieve email address.")
+        auth_url = GmailService.get_auth_url()
+        st.session_state.auth_url = auth_url
+        st.rerun()
+    except Exception as e:
+        st.error(f"Could not generate login URL: {e}")
+
+def finish_login(code: str):
+    """Step 2 — exchange the code the user pasted for credentials."""
+    try:
+        with st.spinner('Verifying...'):
+            creds = GmailService.exchange_code(code.strip())
+            email = GmailService.get_service_email(creds)
+            if email:
+                st.session_state.gmail_service = GmailService(creds)
+                st.session_state.user_email = email
+                st.session_state.authenticated = True
+                st.session_state.auth_url = None
+                st.rerun()
+            else:
+                st.error("Authenticated but could not retrieve email address.")
     except Exception as e:
         st.error(f"Authentication failed: {e}")
 
@@ -172,17 +181,34 @@ with st.sidebar:
         st.success(f"Logged in as: {st.session_state.user_email}")
         
         if st.button("Switch Account"):
-             login(force_new=True)
+            st.session_state.authenticated = False
+            st.session_state.gmail_service = None
+            st.session_state.user_email = ""
+            start_login()
 
         if st.button("Logout"):
             st.session_state.gmail_service = None
             st.session_state.authenticated = False
             st.session_state.user_email = ""
+            st.session_state.auth_url = None
+            st.rerun()
+    elif st.session_state.auth_url:
+        # Step 2 — waiting for user to paste the code
+        st.markdown(f"[**Click here to authorize with Google**]({st.session_state.auth_url})")
+        st.caption("After authorizing, Google will show a code. Paste it below:")
+        code_input = st.text_input("Paste authorization code here", key="oauth_code")
+        if st.button("Submit Code"):
+            if code_input:
+                finish_login(code_input)
+            else:
+                st.warning("Please paste the code from Google first.")
+        if st.button("Cancel"):
+            st.session_state.auth_url = None
             st.rerun()
     else:
         st.info("Not logged in")
         if st.button("Login with Google"):
-            login()
+            start_login()
 
     st.markdown("---")
     st.write("Current Model: Naive Bayes")

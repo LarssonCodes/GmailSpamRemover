@@ -1,97 +1,124 @@
-import os.path
+import os
 import base64
+import json
+import streamlit as st
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
+
+def _get_client_config():
+    """
+    Load OAuth client config from Streamlit Secrets (for cloud) 
+    or from credentials.json (for local dev).
+    """
+    # Streamlit Cloud: secrets are under [google_oauth]
+    if "google_oauth" in st.secrets:
+        secret = st.secrets["google_oauth"]
+        return {
+            "web": {
+                "client_id": secret["client_id"],
+                "client_secret": secret["client_secret"],
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [secret.get("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")],
+            }
+        }
+    # Local dev fallback
+    creds_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'credentials.json')
+    if os.path.exists(creds_path):
+        with open(creds_path) as f:
+            return json.load(f)
+    raise FileNotFoundError(
+        "No OAuth credentials found. Add [google_oauth] to Streamlit Secrets "
+        "or place credentials.json in the project folder."
+    )
+
+def _get_redirect_uri():
+    if "google_oauth" in st.secrets:
+        return st.secrets["google_oauth"].get("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")
+    return "urn:ietf:wg:oauth:2.0:oob"
+
 
 class GmailService:
     def __init__(self, credentials=None):
         self.creds = credentials
         if not self.creds or not self.creds.valid:
-             raise ValueError("Valid credentials must be provided or authentication flow must be run.")
-
+            raise ValueError("Valid credentials must be provided.")
         self.service = build('gmail', 'v1', credentials=self.creds)
 
+    # ── Step 1: Get the Google authorization URL ────────────────────────────
     @staticmethod
-    def authenticate_user(credentials_path='credentials.json', force_new=False):
-        """
-        Authenticates a user and returns their credentials.
-        """
-        creds = None
-        
-        # Only check token.json if we are NOT forcing a new login
-        if not force_new and os.path.exists('token.json'):
-             try:
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-             except:
-                pass 
-        
-        if not creds or not creds.valid:
-            if not force_new and creds and creds.expired and creds.refresh_token:
-                try:
-                    creds.refresh(Request())
-                except:
-                    creds = None
-            
-            if not creds:
-                if not os.path.exists(credentials_path):
-                    raise FileNotFoundError(f"Credentials file not found at {credentials_path}")
-                flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
-                # Ensure we force account picker if forcing new login
-                # prompt='select_account' forces the account picker
-                kwargs = {'port': 0}
-                if force_new:
-                    # We can't easily pass 'prompt' to run_local_server directly in all versions, 
-                    # but we can set it on the flow authorization url if needed.
-                    # Standard run_local_server usually just opens the auth URL.
-                    # flow.authorization_url(prompt='select_account')
-                    # Actually, run_local_server handles the whole flow. 
-                    # Let's try to just run it; usually it cookies auth unless we explicitly ask otherwise.
-                    # To force account picker, we might need to modify the flow or just rely on user switching in browser.
-                     pass
+    def get_auth_url():
+        """Return the Google OAuth URL the user must visit."""
+        client_config = _get_client_config()
+        redirect_uri = _get_redirect_uri()
 
-                creds = flow.run_local_server(port=0)
-        
-        return creds
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=SCOPES,
+            redirect_uri=redirect_uri,
+        )
+        auth_url, _ = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true',
+            prompt='select_account',
+        )
+        # Store the flow state in session so Step 2 can finish it
+        st.session_state['oauth_flow_state'] = flow.state
+        st.session_state['oauth_client_config'] = client_config
+        return auth_url
 
+    # ── Step 2: Exchange the auth code for credentials ─────────────────────
+    @staticmethod
+    def exchange_code(code: str):
+        """Given the auth code from Google, return a Credentials object."""
+        client_config = st.session_state.get('oauth_client_config')
+        if not client_config:
+            client_config = _get_client_config()
+
+        redirect_uri = _get_redirect_uri()
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=SCOPES,
+            redirect_uri=redirect_uri,
+        )
+        flow.fetch_token(code=code)
+        return flow.credentials
+
+    # ── Helper: Get the email address from credentials ──────────────────────
     @staticmethod
     def get_service_email(creds):
         try:
             service = build('gmail', 'v1', credentials=creds)
             profile = service.users().getProfile(userId='me').execute()
             return profile.get('emailAddress')
-        except:
+        except Exception:
             return None
 
+    # ── Gmail API helpers ───────────────────────────────────────────────────
     def get_unread_messages(self, max_results=20):
-        """Lists unread messages in the user's mailbox."""
         try:
-            results = self.service.users().messages().list(userId='me', q='is:unread', maxResults=max_results).execute()
-            messages = results.get('messages', [])
-            return messages
+            results = self.service.users().messages().list(
+                userId='me', q='is:unread', maxResults=max_results
+            ).execute()
+            return results.get('messages', [])
         except HttpError as error:
             print(f'An error occurred: {error}')
             return []
 
     def get_message_content(self, msg_id):
-        """Gets the content of a message."""
         try:
-            message = self.service.users().messages().get(userId='me', id=msg_id, format='full').execute()
+            message = self.service.users().messages().get(
+                userId='me', id=msg_id, format='full'
+            ).execute()
             payload = message['payload']
             headers = payload.get('headers', [])
-            
-            subject = ""
-            for header in headers:
-                if header['name'] == 'Subject':
-                    subject = header['value']
-                    break
-            
-            body = ""
+            subject = next((h['value'] for h in headers if h['name'] == 'Subject'), '')
+            body = ''
             if 'parts' in payload:
                 for part in payload['parts']:
                     if part['mimeType'] == 'text/plain':
@@ -103,51 +130,30 @@ class GmailService:
                 data = payload['body'].get('data')
                 if data:
                     body = base64.urlsafe_b64decode(data).decode('utf-8')
-            
             return f"Subject: {subject}\n{body}"
         except HttpError as error:
             print(f'An error occurred: {error}')
-            return ""
+            return ''
 
     def move_to_spam(self, msg_id):
-        """Moves a message to the SPAM category and removes it from INBOX."""
         try:
-            # First, check if SPAM label exists (standard Gmail behavior)
-            # Actually, we can just use the 'trash' method or move to 'SPAM' label
             self.service.users().messages().modify(
-                userId='me',
-                id=msg_id,
-                body={
-                    'removeLabelIds': ['INBOX', 'UNREAD'],
-                    'addLabelIds': ['SPAM']
-                }
+                userId='me', id=msg_id,
+                body={'removeLabelIds': ['INBOX', 'UNREAD'], 'addLabelIds': ['SPAM']}
             ).execute()
-            print(f"Message {msg_id} moved to SPAM.")
         except HttpError as error:
             print(f'An error occurred: {error}')
 
     def trash_message(self, msg_id):
-        """Trashes a message."""
         try:
             self.service.users().messages().trash(userId='me', id=msg_id).execute()
-            print(f"Message {msg_id} trashed.")
         except HttpError as error:
             print(f'An error occurred: {error}')
 
     def get_email_address(self):
-        """Gets the email address of the authenticated user."""
         try:
             profile = self.service.users().getProfile(userId='me').execute()
             return profile.get('emailAddress')
         except HttpError as error:
             print(f'An error occurred: {error}')
             return None
-
-if __name__ == "__main__":
-    # This won't run without credentials.json
-    try:
-        creds = GmailService.authenticate_user()
-        service = GmailService(creds)
-        print("Gmail service initialized successfully.")
-    except Exception as e:
-        print(f"Error initializing Gmail service: {e}")
