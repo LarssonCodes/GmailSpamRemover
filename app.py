@@ -83,6 +83,7 @@ if "code" in _params and not st.session_state.authenticated:
                 st.rerun()
     except Exception as _e:
         st.error(f"Auto sign-in failed: {_e}")
+        st.info("Debugging Info: This error often occurs if the redirect URI in Google Cloud Console doesn't match the one used by Streamlit, or if the user is not added as a Test User.")
         st.query_params.clear()
 
 def init_services():
@@ -94,11 +95,9 @@ def init_services():
         st.error(f"Error initializing services: {e}")
 
 def start_login():
-    """Step 1 — redirect user to Google's auth page."""
+    """Step 1 — generate auth URL and update session state."""
     try:
         auth_url = GmailService.get_auth_url()
-        # Open Google's sign-in page in the same tab
-        st.markdown(f'<meta http-equiv="refresh" content="0; url={auth_url}">', unsafe_allow_html=True)
         st.session_state.auth_url = auth_url
     except Exception as e:
         st.error(f"Could not generate login URL: {e}")
@@ -119,6 +118,7 @@ def finish_login(code: str):
                 st.error("Authenticated but could not retrieve email address.")
     except Exception as e:
         st.error(f"Authentication failed: {e}")
+        st.info("Tip: Ensure the code you pasted is correct and hasn't expired. If you see a 403 error on Google's page, check your Google Cloud Console 'Test Users' list.")
 
 def scan_emails():
     if not st.session_state.gmail_service:
@@ -206,22 +206,29 @@ with st.sidebar:
             st.session_state.auth_url = None
             st.rerun()
     elif st.session_state.auth_url:
-        # Step 2 — waiting for user to paste the code
-        st.markdown(f"[**Click here to authorize with Google**]({st.session_state.auth_url})")
-        st.caption("After authorizing, Google will show a code. Paste it below:")
+        # Step 2 — user is about to go to Google or has a code
+        st.success("Authorization URL Generated")
+        st.markdown(f'<a href="{st.session_state.auth_url}" target="_blank" style="display: inline-block; padding: 0.5rem 1rem; background-color: #4285F4; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Click here to Sign in with Google</a>', unsafe_allow_html=True)
+        st.info("A new tab will open. After authorizing, Google will provide a code.")
+        
+        with st.expander("Debug Login URL"):
+            st.code(st.session_state.auth_url)
+            st.write("If you see a 403 error on Google's page, please ensure you are logged into the correct Google account in your browser.")
+
         code_input = st.text_input("Paste authorization code here", key="oauth_code")
         if st.button("Submit Code"):
             if code_input:
                 finish_login(code_input)
             else:
                 st.warning("Please paste the code from Google first.")
-        if st.button("Cancel"):
+        if st.button("Cancel Login"):
             st.session_state.auth_url = None
             st.rerun()
     else:
         st.info("Not logged in")
         if st.button("Login with Google"):
             start_login()
+            st.rerun()
 
     st.markdown("---")
     st.write("Current Model: Naive Bayes")

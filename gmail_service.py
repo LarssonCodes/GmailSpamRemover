@@ -49,8 +49,9 @@ def _get_redirect_uri():
     """Return the redirect URI — the app URL on cloud, localhost for local dev."""
     if "google_oauth" in st.secrets:
         return st.secrets["google_oauth"]["redirect_uri"]
-    # Local dev: use localhost (InstalledAppFlow style)
-    return "http://localhost"
+    redirect_uri = "http://localhost"
+    # st.write(f"DEBUG: Using redirect_uri: {redirect_uri}") # Uncomment if debugging locally
+    return redirect_uri
 
 
 class GmailService:
@@ -89,7 +90,8 @@ class GmailService:
             service = build('gmail', 'v1', credentials=creds)
             profile = service.users().getProfile(userId='me').execute()
             return profile.get('emailAddress')
-        except Exception:
+        except Exception as e:
+            st.error(f"Failed to retrieve user profile: {e}")
             return None
 
     def get_unread_messages(self, max_results=20):
