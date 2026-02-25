@@ -601,6 +601,9 @@
         <a href="#confusion">Confusion Matrix</a>
         <a href="#qa">Judge Q&amp;A</a>
         <a href="#resources">📚 Resources</a>
+        <a href="learn.html"
+            style="background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);color:#a5b4fc;border-radius:8px;">🎮
+            Interactive Learn</a>
     </nav>
 
     <!-- HERO -->
@@ -740,7 +743,8 @@
             <!-- train_model.py -->
             <h3>train_model.py — Model Training</h3>
             <p>A one-time script. It is <strong>not imported</strong> by the app — it was run offline to produce the
-                <span class="inline-code">.pkl</span> files.</p>
+                <span class="inline-code">.pkl</span> files.
+            </p>
             <pre><code><span class="ck">from</span> sklearn.naive_bayes <span class="ck">import</span> MultinomialNB
 <span class="ck">from</span> sklearn.feature_extraction.text <span class="ck">import</span> CountVectorizer
 <span class="ck">from</span> sklearn.model_selection <span class="ck">import</span> train_test_split
@@ -1035,7 +1039,8 @@ joblib.dump(vectorizer, 'vectorizer.pkl')</code></pre>
                             prevent it by: (1) using a separate test set (20%) never seen during training, (2) using
                             <span class="inline-code">stop_words='english'</span> in CountVectorizer to remove noise
                             words, and (3) Naive Bayes itself is inherently low-variance — it has no complex decision
-                            boundary to overfit.</p>
+                            boundary to overfit.
+                        </p>
                     </div>
                 </details>
 
@@ -1088,7 +1093,8 @@ joblib.dump(vectorizer, 'vectorizer.pkl')</code></pre>
                             learns what spam/ham looks like. Logistic Regression and SVM are
                             <strong>discriminative</strong> — they model P(Y|X) directly, learning a decision boundary.
                             Generative models train faster; discriminative models often have higher accuracy on larger
-                            datasets.</p>
+                            datasets.
+                        </p>
                     </div>
                 </details>
             </div>
@@ -1200,7 +1206,8 @@ joblib.dump(vectorizer, 'vectorizer.pkl')</code></pre>
                             decode it using Python's <span
                                 class="inline-code">base64.urlsafe_b64decode(data).decode('utf-8')</span>. For multipart
                             emails we iterate through <span class="inline-code">payload['parts']</span> and find the
-                            <span class="inline-code">text/plain</span> MIME type.</p>
+                            <span class="inline-code">text/plain</span> MIME type.
+                        </p>
                     </div>
                 </details>
 
@@ -1411,7 +1418,8 @@ joblib.dump(vectorizer, 'vectorizer.pkl')</code></pre>
                             credentials or financial information by impersonating trusted entities (banks, Google,
                             etc.). Our model was trained on spam/ham data and catches common spam patterns, but phishing
                             detection requires additional signals like URL analysis, sender reputation, and header
-                            inspection beyond plain text classification.</p>
+                            inspection beyond plain text classification.
+                        </p>
                     </div>
                 </details>
 
