@@ -14,9 +14,9 @@ token_*.json
 client_secret_*.json
 credentials.json
 
-# Large binary/data files
-*.pkl
+# Large binary/data files (CSVs are too big to commit)
 *.csv
+# Note: .pkl model files ARE committed so Streamlit Cloud can load them
 
 # Jupyter checkpoints
 .ipynb_checkpoints/

@@ -193,7 +193,7 @@ with st.sidebar:
     # Model accuracy
     if st.session_state.spam_filter:
         with st.spinner("Computing accuracy..."):
-            acc = st.session_state.spam_filter.get_accuracy(data_dir='l:/email')
+            acc = st.session_state.spam_filter.get_accuracy(data_dir=os.path.dirname(__file__))
         if acc is not None:
             st.metric("Model Accuracy", f"{acc}%")
         else:

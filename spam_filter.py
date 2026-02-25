@@ -5,7 +5,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 class SpamFilter:
-    def __init__(self, model_path='spam_model.pkl', vectorizer_path='vectorizer.pkl'):
+    def __init__(self, model_path=None, vectorizer_path=None):
+        _here = os.path.dirname(os.path.abspath(__file__))
+        if model_path is None:
+            model_path = os.path.join(_here, 'spam_model.pkl')
+        if vectorizer_path is None:
+            vectorizer_path = os.path.join(_here, 'vectorizer.pkl')
         self.model = joblib.load(model_path)
         self.vectorizer = joblib.load(vectorizer_path)
 
