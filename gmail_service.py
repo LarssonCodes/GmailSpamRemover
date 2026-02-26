@@ -37,7 +37,7 @@ def _get_client_config():
                 "client_secret": cfg["client_secret"],
                 "auth_uri": cfg.get("auth_uri", "https://accounts.google.com/o/oauth2/auth"),
                 "token_uri": cfg.get("token_uri", "https://oauth2.googleapis.com/token"),
-                "redirect_uris": cfg.get("redirect_uris", ["http://localhost"]),
+                "redirect_uris": cfg.get("redirect_uris", ["http://localhost:8501/"]),
             }
         }
     raise FileNotFoundError(
@@ -49,7 +49,7 @@ def _get_redirect_uri():
     """Return the redirect URI — the app URL on cloud, localhost for local dev."""
     if "google_oauth" in st.secrets:
         return st.secrets["google_oauth"]["redirect_uri"]
-    redirect_uri = "http://localhost"
+    redirect_uri = "http://localhost:8501/"
     # st.write(f"DEBUG: Using redirect_uri: {redirect_uri}") # Uncomment if debugging locally
     return redirect_uri
 

@@ -1,774 +1,754 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Learn: Gmail Spam Remover — From Zero to Pro</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
-
-        :root {
-            --bg: #0a0e1a;
-            --surface: #111827;
-            --card: #1a2236;
-            --border: #1e2d45;
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, .35);
-            --accent: #06b6d4;
-            --gold: #f59e0b;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --text: #e2e8f0;
-            --muted: #64748b;
-            --code-bg: #0d1117;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ──── HUD ──── */
-        #hud {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 200;
-            background: rgba(10, 14, 26, .92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 10px 24px;
-            flex-wrap: wrap;
-        }
-
-        .hud-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .hud-level {
-            font-weight: 800;
-            font-size: 15px;
-            color: #fff;
-            white-space: nowrap;
-        }
-
-        .hud-xp-wrap {
-            flex: 1;
-            min-width: 120px;
-            max-width: 260px;
-        }
-
-        .hud-xp-label {
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 3px;
-        }
-
-        .hud-xp-bar {
-            background: #1e293b;
-            border-radius: 20px;
-            height: 8px;
-            overflow: hidden;
-        }
-
-        .hud-xp-fill {
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transition: width .6s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .hud-stat {
-            background: rgba(99, 102, 241, .12);
-            border: 1px solid rgba(99, 102, 241, .25);
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .hud-stat span {
-            color: var(--gold);
-        }
-
-        #progress-overall {
-            margin-left: auto;
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        /* ──── SCREEN SYSTEM ──── */
-        .screen {
-            display: none;
-            min-height: 100vh;
-            padding-top: 70px;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* ──── SPLASH ──── */
-        #splash {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-height: 100vh;
-            padding: 32px;
-            background: radial-gradient(ellipse at 50% 20%, rgba(99, 102, 241, .15) 0%, transparent 65%);
-        }
-
-        .splash-icon {
-            font-size: 5rem;
-            animation: float 3s ease-in-out infinite;
-            margin-bottom: 24px;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-12px);
-            }
-        }
-
-        .splash h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #a5b4fc, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-        }
-
-        .splash p {
-            color: var(--muted);
-            font-size: 1.05rem;
-            max-width: 520px;
-            line-height: 1.7;
-            margin-bottom: 32px;
-        }
-
-        .xp-preview {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 32px;
-        }
-
-        .xp-badge {
-            background: rgba(99, 102, 241, .12);
-            border: 1px solid rgba(99, 102, 241, .3);
-            border-radius: 10px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .btn-start {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            padding: 16px 40px;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 0 30px var(--primary-glow);
-            transition: all .2s;
-            font-family: inherit;
-        }
-
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 45px var(--primary-glow);
-        }
-
-        /* ──── LESSON LAYOUT ──── */
-        #lesson-screen {
-            padding-top: 70px;
-        }
-
-        .lesson-wrap {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 32px 20px 80px;
-        }
-
-        /* ──── LESSON CARD ──── */
-        .lesson-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            animation: slideIn .4s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .lesson-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(99, 102, 241, .15);
-            border: 1px solid rgba(99, 102, 241, .3);
-            color: #a5b4fc;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .8px;
-            margin-bottom: 16px;
-        }
-
-        .lesson-card h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 12px;
-        }
-
-        .lesson-card p {
-            color: #94a3b8;
-            line-height: 1.8;
-            margin-bottom: 12px;
-            font-size: 15px;
-        }
-
-        .lesson-card ul {
-            color: #94a3b8;
-            padding-left: 20px;
-            margin-bottom: 12px;
-        }
-
-        .lesson-card li {
-            margin-bottom: 6px;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        .lesson-card strong {
-            color: #c7d2fe;
-        }
-
-        .code-block {
-            background: var(--code-bg);
-            border: 1px solid #1e293b;
-            border-radius: 10px;
-            padding: 16px 18px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.7;
-            overflow-x: auto;
-            margin: 14px 0;
-            color: #93c5fd;
-        }
-
-        .ck {
-            color: #c084fc;
-        }
-
-        .cm {
-            color: #6ee7b7;
-        }
-
-        .cs {
-            color: #fca5a5;
-        }
-
-        .cn {
-            color: #fde68a;
-        }
-
-        .visual-box {
-            background: rgba(6, 182, 212, .06);
-            border: 1px solid rgba(6, 182, 212, .2);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin: 14px 0;
-            font-size: 14px;
-            color: #7dd3fc;
-        }
-
-        .visual-box strong {
-            color: #06b6d4;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .flow-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 10px 0;
-        }
-
-        .flow-node {
-            background: rgba(99, 102, 241, .15);
-            border: 1px solid rgba(99, 102, 241, .3);
-            color: #a5b4fc;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .flow-arr {
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .fun-fact {
-            background: rgba(245, 158, 11, .07);
-            border-left: 3px solid var(--gold);
-            padding: 12px 16px;
-            border-radius: 0 8px 8px 0;
-            margin: 12px 0;
-            font-size: 14px;
-            color: #fcd34d;
-        }
-
-        .fun-fact::before {
-            content: '💡 Fun Fact: ';
-            font-weight: 700;
-        }
-
-        /* ──── QUIZ ──── */
-        .quiz-card {
-            background: var(--surface);
-            border: 2px solid var(--primary);
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            animation: slideIn .4s ease;
-        }
-
-        .quiz-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-
-        .quiz-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .quiz-card h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .quiz-xp-tag {
-            margin-left: auto;
-            background: rgba(245, 158, 11, .15);
-            color: var(--gold);
-            border: 1px solid rgba(245, 158, 11, .3);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .opt {
-            background: var(--card);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 13px 18px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-            transition: all .18s;
-            text-align: left;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .opt:hover:not([disabled]) {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, .08);
-            transform: translateX(3px);
-        }
-
-        .opt.correct {
-            border-color: var(--success) !important;
-            background: rgba(34, 197, 94, .1) !important;
-            color: #4ade80;
-        }
-
-        .opt.wrong {
-            border-color: var(--danger) !important;
-            background: rgba(239, 68, 68, .1) !important;
-            color: #f87171;
-        }
-
-        .opt-key {
-            width: 26px;
-            height: 26px;
-            border-radius: 6px;
-            background: rgba(99, 102, 241, .2);
-            color: #a5b4fc;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .feedback-box {
-            display: none;
-            margin-top: 14px;
-            padding: 14px 18px;
-            border-radius: 10px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .feedback-box.correct {
-            background: rgba(34, 197, 94, .1);
-            border: 1px solid rgba(34, 197, 94, .3);
-            color: #4ade80;
-        }
-
-        .feedback-box.wrong {
-            background: rgba(239, 68, 68, .1);
-            border: 1px solid rgba(239, 68, 68, .3);
-            color: #f87171;
-        }
-
-        .feedback-box p {
-            margin-bottom: 4px;
-        }
-
-        /* ──── NAV BUTTONS ──── */
-        .btn-next {
-            background: linear-gradient(135deg, var(--primary), #818cf8);
-            border: none;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 700;
-            padding: 14px 32px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-            display: none;
-            transition: all .2s;
-            font-family: inherit;
-        }
-
-        .btn-next.visible {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            animation: popIn .3s cubic-bezier(.34, 1.56, .64, 1);
-        }
-
-        @keyframes popIn {
-            from {
-                transform: scale(.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .btn-next:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, .4);
-        }
-
-        /* ──── XP TOAST ──── */
-        #xp-toast {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: rgba(245, 158, 11, .15);
-            border: 1px solid rgba(245, 158, 11, .4);
-            color: var(--gold);
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            z-index: 300;
-            opacity: 0;
-            transform: translateY(-10px) scale(.9);
-            transition: all .3s;
-            pointer-events: none;
-        }
-
-        #xp-toast.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* ──── LEVEL UP ──── */
-        #levelup-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background: rgba(0, 0, 0, .85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        #levelup-overlay.show {
-            display: flex;
-            animation: fadeIn .3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .levelup-box {
-            background: var(--card);
-            border: 2px solid var(--gold);
-            border-radius: 24px;
-            padding: 48px 56px;
-            max-width: 420px;
-        }
-
-        .levelup-box h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--gold);
-            margin: 16px 0 8px;
-        }
-
-        .levelup-box p {
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
-
-        .levelup-stars {
-            font-size: 2.5rem;
-            letter-spacing: 6px;
-            animation: pulse 1s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        /* ──── COMPLETION ──── */
-        #done-screen {
-            display: none;
-            min-height: 100vh;
-            padding-top: 70px;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            flex-direction: column;
-        }
-
-        #done-screen.active {
-            display: flex;
-        }
-
-        .done-wrap {
-            max-width: 600px;
-            padding: 40px 24px;
-        }
-
-        .done-trophy {
-            font-size: 6rem;
-            animation: float 3s ease-in-out infinite;
-            margin-bottom: 24px;
-        }
-
-        .score-card {
-            background: var(--card);
-            border: 2px solid var(--gold);
-            border-radius: 16px;
-            padding: 28px;
-            margin: 24px 0;
-        }
-
-        .score-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .score-item {
-            text-align: center;
-        }
-
-        .score-num {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--gold);
-        }
-
-        .score-label {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .mastery-bar-wrap {
-            margin: 24px 0;
-            text-align: left;
-        }
-
-        .mastery-label {
-            font-size: 13px;
-            color: var(--muted);
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .mastery-bar {
-            background: #1e293b;
-            border-radius: 20px;
-            height: 12px;
-            overflow: hidden;
-        }
-
-        .mastery-fill {
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(90deg, var(--gold), var(--success));
-            transition: width 1.5s ease;
-        }
-
-        /* ──── MISC ──── */
-        .divider {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 20px 0;
-        }
-
-        .step-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-
-        .step-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border);
-            transition: all .3s;
-        }
-
-        .step-dot.done {
-            background: var(--success);
-        }
-
-        .step-dot.active {
-            background: var(--primary);
-            transform: scale(1.4);
-            box-shadow: 0 0 8px var(--primary);
-        }
+      @import url("https://fonts.googleapis.com/css2?family=Shrikhand&family=Inter:wght@400;500;600;700&display=swap");
+
+      :root {
+        --bg: #f9f6f0;
+        --surface: #ffffff;
+        --card: #f9f6f0;
+        --border: #1a1a1a;
+        --primary: #f24e53;
+        --primary-glow: rgba(242, 78, 83, 0.2);
+        --accent: #1a1a1a;
+        --gold: #f24e53;
+        /* map gold to primary for consistent look */
+        --success: #1a1a1a;
+        --danger: #f24e53;
+        --text: #1a1a1a;
+        --muted: #4a4a4a;
+        --code-bg: #ffffff;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      /* ──── HUD ──── */
+      #hud {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: #ffffff;
+        border-bottom: 3px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .hud-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+        border: 2px solid var(--border);
+      }
+
+      .hud-level {
+        font-family: "Shrikhand", cursive;
+        font-size: 18px;
+        color: var(--primary);
+        white-space: nowrap;
+        letter-spacing: 1px;
+      }
+
+      .hud-xp-label {
+        font-size: 12px;
+        color: var(--text);
+        font-weight: 700;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+      }
+
+      .hud-xp-bar {
+        background: #ffffff;
+        border-radius: 999px;
+        height: 14px;
+        overflow: hidden;
+        border: 2px solid var(--border);
+      }
+
+      .hud-xp-fill {
+        height: 100%;
+        background: var(--primary);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        border-right: 2px solid var(--border);
+      }
+
+      .hud-stat {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+
+      .hud-stat span {
+        color: var(--primary);
+      }
+
+      #progress-overall {
+        margin-left: auto;
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--text);
+        text-transform: uppercase;
+      }
+
+      /* ──── SPLASH ──── */
+      #splash {
+        background: none;
+        position: relative;
+        overflow: hidden;
+        padding-top: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 100vh;
+      }
+
+      .splash-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .splash h1 {
+        font-family: "Shrikhand", cursive;
+        font-size: clamp(3rem, 8vw, 5.5rem);
+        color: var(--primary);
+        line-height: 1.1;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .splash p {
+        color: var(--text);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin-bottom: 40px;
+      }
+
+      .xp-preview {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+
+      .xp-badge {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        border-radius: 999px;
+        color: var(--primary);
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-start {
+        background: var(--primary);
+        border: 3px solid var(--border);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding: 16px 40px;
+        cursor: pointer;
+        border-radius: 999px;
+        text-transform: uppercase;
+        transition: all 0.2s;
+        box-shadow: 4px 4px 0 var(--border);
+      }
+
+      .btn-start:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--border);
+      }
+
+      .btn-start:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0 var(--border);
+      }
+
+      /* ──── LESSON LAYOUT ──── */
+      #lesson-screen {
+        padding-top: 90px;
+      }
+
+      .lesson-wrap {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+      }
+
+      /* ──── LESSON CARD ──── */
+      .lesson-card {
+        background: #ffffff;
+        border: 3px solid var(--border);
+        border-radius: 12px;
+        padding: 40px;
+        margin-bottom: 30px;
+        animation: slideIn 0.4s ease;
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      .lesson-badge {
+        display: inline-flex;
+        font-family: "Inter", sans-serif;
+        background: #ffffff;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+      }
+
+      .lesson-card h2 {
+        font-family: "Shrikhand", cursive;
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        letter-spacing: 1px;
+      }
+
+      .lesson-card p {
+        color: var(--text);
+        font-size: 1.25rem;
+        margin-bottom: 24px;
+        line-height: 1.7;
+      }
+
+      .lesson-card ul {
+        color: var(--text);
+        font-size: 1.25rem;
+        margin-bottom: 24px;
+        padding-left: 24px;
+        line-height: 1.7;
+      }
+
+      .lesson-card li {
+        margin-bottom: 10px;
+      }
+
+      .lesson-card strong {
+        color: var(--border);
+        font-weight: 700;
+      }
+
+      .code-block {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        color: var(--text);
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.03);
+        margin: 24px 0;
+        overflow-x: auto;
+      }
+
+      .ck {
+        color: var(--primary);
+        font-weight: bold;
+      }
+
+      .cm {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      .cs {
+        color: var(--border);
+      }
+
+      .cn {
+        color: var(--primary);
+      }
+
+      .visual-box {
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        padding: 24px;
+        margin: 24px 0;
+        font-size: 1.1rem;
+        color: var(--text);
+        border-left: 8px solid var(--primary);
+      }
+
+      .visual-box strong {
+        color: var(--primary);
+        font-family: "Shrikhand", cursive;
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+      }
+
+      .flow-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+
+      .flow-node {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        color: var(--text);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 13px;
+      }
+
+      .flow-arr {
+        color: var(--primary);
+        font-weight: bold;
+      }
+
+      .fun-fact {
+        background: #ffffff;
+        border: 2px solid var(--primary);
+        padding: 20px;
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 1.1rem;
+        margin: 24px 0;
+      }
+
+      .fun-fact::before {
+        content: "★ FUN FACT: ";
+        font-family: "Inter", sans-serif;
+        color: var(--primary);
+        font-weight: 700;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      /* ──── QUIZ ──── */
+      .quiz-card {
+        background: #ffffff;
+        border: 3px solid var(--border);
+        border-radius: 12px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      .quiz-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .quiz-icon {
+        background: var(--primary);
+        color: white;
+        border: 2px solid var(--border);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .quiz-card h3 {
+        font-family: "Inter", sans-serif;
+        font-size: 1.25rem;
+        color: var(--text);
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .quiz-xp-tag {
+        margin-left: auto;
+        background: #ffffff;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .opt {
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 1.25rem;
+        padding: 16px 20px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: "Inter", sans-serif;
+      }
+
+      .opt:hover:not([disabled]) {
+        background: #ffffff;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 var(--border);
+      }
+
+      .opt.correct {
+        border-color: var(--border) !important;
+        background: #ffffff !important;
+        color: var(--text);
+        box-shadow: 0 0 0 4px var(--primary);
+      }
+
+      .opt.wrong {
+        border-color: var(--border) !important;
+        background: #e5e5e5 !important;
+        color: var(--muted);
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+
+      .opt-key {
+        background: #ffffff;
+        color: var(--primary);
+        border: 2px solid var(--border);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .feedback-box {
+        display: none;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        padding: 20px;
+        margin-top: 24px;
+        background: #ffffff;
+      }
+
+      .feedback-box.correct {
+        border-left: 8px solid var(--primary);
+      }
+
+      .feedback-box.wrong {
+        border-left: 8px solid var(--border);
+      }
+
+      .btn-next {
+        background: var(--primary);
+        border: 3px solid var(--border);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 14px 32px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-top: 16px;
+        box-shadow: 4px 4px 0 var(--border);
+        transition: all 0.2s;
+        display: none;
+      }
+
+      .btn-next.visible {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-next:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--border);
+      }
+
+      .btn-next:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 var(--border);
+      }
+
+      #xp-toast {
+        position: fixed;
+        top: 90px;
+        right: 24px;
+        background: #ffffff;
+        border: 2px solid var(--border);
+        color: var(--primary);
+        border-radius: 999px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        padding: 10px 20px;
+        box-shadow: 4px 4px 0 var(--border);
+        z-index: 300;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s;
+        pointer-events: none;
+      }
+
+      #xp-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ──── LEVEL UP ──── */
+      #levelup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        background: rgba(249, 246, 240, 0.95);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      #levelup-overlay.show {
+        display: flex;
+      }
+
+      .levelup-box {
+        background: #ffffff;
+        border: 4px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 12px 12px 0 var(--primary);
+        padding: 48px 56px;
+        max-width: 460px;
+      }
+
+      .levelup-box h2 {
+        font-family: "Shrikhand", cursive;
+        font-size: 3.5rem;
+        color: var(--primary);
+        margin: 16px 0 16px;
+        text-transform: uppercase;
+      }
+
+      .levelup-box p {
+        color: var(--text);
+        font-size: 1.2rem;
+        margin-bottom: 32px;
+      }
+
+      /* ──── COMPLETION ──── */
+      #done-screen {
+        display: none;
+        min-height: 100vh;
+        padding-top: 90px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+      }
+
+      #done-screen.active {
+        display: flex;
+      }
+
+      .done-wrap {
+        max-width: 600px;
+        padding: 40px 24px;
+      }
+
+      .done-wrap h1 {
+        font-family: "Shrikhand", cursive;
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 16px;
+        text-transform: uppercase;
+      }
+
+      .done-wrap p {
+        color: var(--text);
+        font-size: 1.2rem;
+        margin-bottom: 32px;
+      }
+
+      .score-card {
+        background: #ffffff;
+        border: 3px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        margin: 32px 0;
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      .score-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .score-num {
+        font-family: "Inter", sans-serif;
+        color: var(--primary);
+        font-size: 2.5rem;
+        font-weight: 700;
+      }
+
+      .score-label {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        margin-top: 8px;
+        letter-spacing: 1px;
+      }
+
+      .mastery-bar-wrap {
+        margin: 32px 0;
+        text-align: left;
+      }
+
+      .mastery-label {
+        font-family: "Inter", sans-serif;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+
+      .mastery-bar {
+        background: #ffffff;
+        border: 2px solid var(--border);
+        border-radius: 999px;
+        height: 16px;
+        overflow: hidden;
+      }
+
+      .mastery-fill {
+        height: 100%;
+        background: var(--primary);
+        transition: width 1.5s ease;
+        border-right: 2px solid var(--border);
+      }
+
+      .step-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+      }
+
+      .step-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--border);
+        transition: all 0.3s;
+      }
+
+      .step-dot.done {
+        background: var(--border);
+      }
+
+      .step-dot.active {
+        background: var(--primary);
+        transform: scale(1.4);
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <!-- HUD -->
     <div id="hud">
-        <div class="hud-avatar">🎮</div>
-        <div>
-            <div class="hud-level" id="hud-level">Level 1 — Curious Beginner</div>
-            <div style="font-size:11px;color:var(--muted)" id="hud-levelname"></div>
+      <div class="hud-avatar">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"
+          />
+        </svg>
+      </div>
+      <div class="hud-level" id="hud-level">Level 1 — Curious Beginner</div>
+      <div class="hud-xp-wrap">
+        <div class="hud-xp-label">
+          XP
+          <span id="hud-xp-text" style="color: var(--gold); font-weight: 700"
+            >0</span
+          >
+          / <span id="hud-xp-max">100</span>
         </div>
-        <div class="hud-xp-wrap">
-            <div class="hud-xp-label">XP <span id="hud-xp-text" style="color:var(--gold);font-weight:700">0</span> /
-                <span id="hud-xp-max">100</span></div>
-            <div class="hud-xp-bar">
-                <div class="hud-xp-fill" id="hud-xp-fill" style="width:0%"></div>
-            </div>
+        <div class="hud-xp-bar">
+          <div class="hud-xp-fill" id="hud-xp-fill" style="width: 0%"></div>
         </div>
-        <div class="hud-stat">🔥 Streak <span id="hud-streak">0</span></div>
-        <div class="hud-stat">✅ Correct <span id="hud-correct">0</span></div>
-        <div id="progress-overall" id="hud-progress"></div>
+      </div>
+      <div class="hud-stat">🔥 Streak <span id="hud-streak">0</span></div>
+      <div class="hud-stat">✅ Correct <span id="hud-correct">0</span></div>
+      <div id="progress-overall" id="hud-progress"></div>
     </div>
 
     <!-- XP Toast -->
@@ -776,110 +756,519 @@
 
     <!-- Level Up Overlay -->
     <div id="levelup-overlay">
-        <div class="levelup-box">
-            <div class="levelup-stars">⭐⭐⭐</div>
-            <h2 id="lu-title">Level Up!</h2>
-            <p id="lu-desc">You unlocked a new level!</p>
-            <button class="btn-start" onclick="closeLevelUp()">Continue 🚀</button>
-        </div>
+      <div class="levelup-box">
+        <div class="levelup-stars">⭐⭐⭐</div>
+        <h2 id="lu-title">Level Up!</h2>
+        <p id="lu-desc">You unlocked a new level!</p>
+        <button class="btn-start" onclick="closeLevelUp()">Continue 🚀</button>
+      </div>
     </div>
 
     <!-- ══════════════════════ SPLASH ══════════════════════ -->
     <div id="splash" class="screen active">
-        <div class="splash-icon">📧</div>
-        <h1>Gmail Spam Remover<br>Interactive Tour</h1>
-        <p>Go from zero to expert in one session. Learn how this project works step by step — with mini-quizzes, XP
-            rewards, and levels that track your mastery.</p>
-        <div class="xp-preview">
-            <div class="xp-badge">🧩 9 Lessons</div>
-            <div class="xp-badge">❓ 18 Quiz Questions</div>
-            <div class="xp-badge">⭐ 5 Levels</div>
-            <div class="xp-badge">🏆 360 XP to earn</div>
-        </div>
-        <button class="btn-start" onclick="startLearn()">Start Learning 🚀</button>
+      <div class="splash-icon">📧</div>
+      <h1>Gmail Spam Remover<br />Interactive Tour</h1>
+      <p>
+        Go from zero to expert in one session. Learn how this project works step
+        by step — with mini-quizzes, XP rewards, and levels that track your
+        mastery.
+      </p>
+      <div class="xp-preview">
+        <div class="xp-badge">🧩 14 Modules</div>
+        <div class="xp-badge">❓ 35 Quiz Questions</div>
+        <div class="xp-badge">⭐ 10 Levels</div>
+        <div class="xp-badge">🏆 850 XP to earn</div>
+      </div>
+      <button class="btn-start" onclick="startLearn()">
+        Start Learning 🚀
+      </button>
     </div>
 
     <!-- ══════════════════════ LESSON SCREEN ══════════════════════ -->
     <div id="lesson-screen" class="screen">
-        <div class="lesson-wrap">
-            <div class="step-indicator" id="step-dots"></div>
-            <div id="lesson-content"></div>
-        </div>
+      <div class="lesson-wrap">
+        <div class="step-indicator" id="step-dots"></div>
+        <div id="lesson-content"></div>
+      </div>
     </div>
 
     <!-- ══════════════════════ DONE SCREEN ══════════════════════ -->
     <div id="done-screen">
-        <div class="done-wrap">
-            <div class="done-trophy">🏆</div>
-            <h1 style="font-size:2rem;font-weight:800;color:#fff;margin-bottom:8px;">You Did It!</h1>
-            <p style="color:var(--muted);margin-bottom:24px;">You've gone from a complete beginner to a project expert.
-                Here's your final score:</p>
+      <div class="done-wrap">
+        <div class="done-trophy">🏆</div>
+        <h1
+          style="
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+          "
+        >
+          You Did It!
+        </h1>
+        <p style="color: var(--muted); margin-bottom: 24px">
+          You've gone from a complete beginner to a project expert. Here's your
+          final score:
+        </p>
 
-            <div class="score-card">
-                <div class="score-grid">
-                    <div class="score-item">
-                        <div class="score-num" id="final-xp">0</div>
-                        <div class="score-label">Total XP Earned</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="score-num" id="final-correct">0</div>
-                        <div class="score-label">Questions Correct</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="score-num" id="final-streak">0</div>
-                        <div class="score-label">Best Streak</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="score-num" id="final-level">1</div>
-                        <div class="score-label">Final Level</div>
-                    </div>
-                </div>
+        <div class="score-card">
+          <div class="score-grid">
+            <div class="score-item">
+              <div class="score-num" id="final-xp">0</div>
+              <div class="score-label">Total XP Earned</div>
             </div>
-
-            <div class="mastery-bar-wrap">
-                <div class="mastery-label"><span>Project Mastery</span><span id="mastery-pct">0%</span></div>
-                <div class="mastery-bar">
-                    <div class="mastery-fill" id="mastery-fill" style="width:0%"></div>
-                </div>
+            <div class="score-item">
+              <div class="score-num" id="final-correct">0</div>
+              <div class="score-label">Questions Correct</div>
             </div>
-
-            <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">You can now confidently explain the Gmail
-                Spam Remover project — its data, model, metrics, and architecture — to anyone, including judges!</p>
-            <button class="btn-start" onclick="restart()">Play Again 🔄</button>
-            &nbsp;
-            <a href="project_guide.html"
-                style="display:inline-block;margin-top:12px;padding:14px 28px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);text-decoration:none;font-weight:600;font-size:15px;">📖
-                Full Guide</a>
+            <div class="score-item">
+              <div class="score-num" id="final-streak">0</div>
+              <div class="score-label">Best Streak</div>
+            </div>
+            <div class="score-item">
+              <div class="score-num" id="final-level">1</div>
+              <div class="score-label">Final Level</div>
+            </div>
+          </div>
         </div>
+
+        <div class="mastery-bar-wrap">
+          <div class="mastery-label">
+            <span>Project Mastery</span><span id="mastery-pct">0%</span>
+          </div>
+          <div class="mastery-bar">
+            <div class="mastery-fill" id="mastery-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px">
+          You can now confidently explain the Gmail Spam Remover project — its
+          data, model, metrics, and architecture — to anyone, including judges!
+        </p>
+        <button class="btn-start" onclick="restart()">Play Again 🔄</button>
+        &nbsp;
+        <a
+          href="project_guide.html"
+          style="
+            display: inline-block;
+            margin-top: 12px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+          "
+          >📖 Full Guide</a
+        >
+      </div>
     </div>
 
     <script>
-        // ═══════════════════════════════════════════════
-        //  GAME STATE
-        // ═══════════════════════════════════════════════
-        let xp = 0, level = 1, streak = 0, bestStreak = 0, correctCount = 0;
-        let totalQuestions = 0, answeredCorrectly = 0;
-        let currentStep = 0;
-        let questionAnswered = false;
+      // ═══════════════════════════════════════════════
+      //  GAME STATE
+      // ═══════════════════════════════════════════════
+      let xp = 0,
+        level = 1,
+        streak = 0,
+        bestStreak = 0,
+        correctCount = 0;
+      let totalQuestions = 0,
+        answeredCorrectly = 0;
+      let currentStep = 0;
+      let questionAnswered = false;
 
-        const LEVELS = [
-            { name: 'Curious Beginner', minXp: 0 },
-            { name: 'Apprentice Coder', minXp: 80 },
-            { name: 'Data Thinker', minXp: 160 },
-            { name: 'ML Practitioner', minXp: 260 },
-            { name: 'Project Expert 🏆', minXp: 330 },
-        ];
+      const LEVELS = [
+        { name: "Curious Beginner", minXp: 0 },
+        { name: "Apprentice Coder", minXp: 80 },
+        { name: "Data Thinker", minXp: 160 },
+        { name: "ML Practitioner", minXp: 260 },
+        { name: "Filter Builder", minXp: 380 },
+        { name: "Logic Master", minXp: 500 },
+        { name: "API Whisperer", minXp: 620 },
+        { name: "Spam Slayer", minXp: 750 },
+        { name: "Inbox Guardian", minXp: 900 },
+        { name: "Project Grandmaster 👑", minXp: 1100 },
 
-        // ═══════════════════════════════════════════════
-        //  STEPS  (lessons + quizzes interleaved)
-        // ═══════════════════════════════════════════════
-        const STEPS = [
+        // ── 10. The Dictionary vs The Brain ──
+        {
+          type: "lesson",
+          badge: "Module 10 · Simple Terms",
+          emoji: "📖",
+          title: "The Dictionary vs The Brain",
+          body: `
+<p>Let's make this super simple. Our project uses two saved files: <span style="color:var(--accent);font-family:monospace;font-weight:bold;">vectorizer.pkl</span> and <span style="color:var(--primary);font-family:monospace;font-weight:bold;">spam_model.pkl</span>. Think of them like a <strong>Dictionary</strong> and a <strong>Brain</strong>.</p>
+<div class="visual-box">
+<strong>📖 The Dictionary (vectorizer.pkl)</strong>
+It just reads the email and counts words.<br>
+<em>"I see the word 'Free' 3 times and 'Money' 1 time."</em>
+</div>
+<div class="visual-box">
+<strong>🧠 The Brain (spam_model.pkl)</strong>
+It takes those word counts from the Dictionary and makes a decision based on past experience.<br>
+<em>"Emails with 'Free' and 'Money' are usually bad. This is SPAM!"</em>
+</div>
+<p>If you only had the Brain but no Dictionary, it wouldn't know how to read the words. If you had the Dictionary but no Brain, it could count words but wouldn't know if they meant "spam" or "ham". They <strong>must work together</strong>.</p>
+`,
+        },
 
-            // ── 1. What is spam? ──
-            {
-                type: 'lesson', badge: 'Module 1 · The Problem', emoji: '📬',
-                title: 'What is Spam and Why Does It Matter?',
-                body: `
+        {
+          type: "quiz",
+          q: 'In our simple analogy, what is the job of the "Dictionary" (the vectorizer.pkl file)?',
+          xp: 20,
+          opts: [
+            "To make the final decision if an email is spam",
+            "To count words inside an email so the brain understands them",
+            "To generate a list of passwords",
+            "To connect to your Gmail account",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Spot on! The Dictionary simply looks at text, finds the words it knows, and counts them. The Brain uses those counts to make the actual prediction.",
+          feedback_wrong:
+            'The "Dictionary" (Vectorizer) only counts the words in the email. It turns text into a language of numbers (counts) so the "Brain" (Model) can make the decision.',
+        },
+
+        // ── 11. Chopping up Sentences ──
+        {
+          type: "lesson",
+          badge: "Module 11 · Tokens",
+          emoji: "🧩",
+          title: "Chopping Up Sentences (Tokenization)",
+          body: `
+<p>Computers don't read sentences the way we do. Before the Dictionary can count words, it has to chop the sentence into small, individual pieces. We call these pieces <strong>Tokens</strong>.</p>
+<p>Imagine the sentence: <em>"Win money fast!!"</em></p>
+<p>The computer chops it up (tokenizes it) and ignores the punctuation: <code>['Win', 'money', 'fast']</code></p>
+<p>It then makes everything lowercase so "Win" and "win" are counted as the EXACT same word: <code>['win', 'money', 'fast']</code></p>
+<div class="fun-fact">This process makes the ML model "dumb" but incredibly fast. It doesn't care about grammar or exclamation marks, only which words appear!</div>
+`,
+        },
+
+        {
+          type: "quiz",
+          q: 'What happens when a sentence is "tokenized"?',
+          xp: 20,
+          opts: [
+            "It is translated into another language",
+            "It gets encrypted for safety",
+            "It gets chopped into individual lowercase words (tokens)",
+            "It is permanently deleted from the hard drive",
+          ],
+          correct: 2,
+          feedback_correct:
+            "Exactly! Tokenization is the simple process of chopping a big sentence into small, lowercase chunks (tokens) so the computer can count them easily.",
+          feedback_wrong:
+            'Tokenization just means "chopping up". The sentence is broken down into individual, lowercase words (tokens).',
+        },
+
+        // ── 12. Spam vs Trash ──
+        {
+          type: "lesson",
+          badge: "Module 12 · Inbox Actions",
+          emoji: "🗑️",
+          title: "Trash vs. Spam Folder",
+          body: `
+<p>In our App, you have two choices for bad emails: <strong>Trash</strong> or <strong>Spam</strong>. Let's explain what those actually do to your real Gmail account.</p>
+<ul>
+  <li style="margin-bottom: 10px;"><strong>Trash:</strong> The app tells Google <em>"Delete this email."</em> It goes to your Bin folder and Google deletes it forever after 30 days.</li>
+  <li><strong>Move to Spam:</strong> The app tells Google <em>"I consider this email to be spam."</em> By doing this, you actually train Google's own internal filters! The next time that sender emails you, Google might catch it before our app even has to.</li>
+</ul>
+<div class="visual-box"><strong>Why this matters:</strong>
+Moving to Spam is usually better because it helps protect everyone else on Gmail by teaching Google's built-in brain about new bad senders!
+</div>
+`,
+        },
+
+        {
+          type: "quiz",
+          q: 'Why is clicking "Move to Spam" often better than clicking "Trash"?',
+          xp: 20,
+          opts: [
+            "It saves battery power on your laptop",
+            "It trains Google's own filters to catch future emails from that sender for everyone",
+            "Trash doesn't actually delete the email",
+            "The Spam folder is physically larger",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Perfect! Moving an email to the Spam folder sends a signal to Google that helps train their own billion-dollar ML filters.",
+          feedback_wrong:
+            'Moving to Spam actually tells Google "this is a bad sender". It feeds data into Google\'s own AI, helping catch future spam for you and others.',
+        },
+
+        // ── 13. The Golden Key ──
+        {
+          type: "lesson",
+          badge: "Module 13 · Simple Security",
+          emoji: "🔑",
+          title: "The Golden Key (OAuth)",
+          body: `
+<p>We talked about OAuth 2.0 earlier, but let's make it so simple a child could understand.</p>
+<p>Imagine you live in a big house (your Gmail account). I (the Spam Remover App) promise to clean your house for you. But you don't want to give me the <strong>Master Key</strong> to your front door (your password), because I might steal your TV!</p>
+<p>Instead, you ask the landlord (Google) to give me a special <strong>Golden Key (a Token)</strong>.</p>
+<div class="visual-box">
+<strong>The Golden Key rules:</strong><br>
+1. It only opens the door to the Mail Room (I can only read emails).<br>
+2. I cannot see your bank statements or YouTube history.<br>
+3. You can change the locks anytime without changing your Master Key!
+</div>
+<p>That is what OAuth does. It lets our app ask Google for a Golden Key to just read emails, keeping your real password 100% hidden and safe.</p>
+`,
+        },
+
+        {
+          type: "quiz",
+          q: "In the Golden Key analogy, who is giving our app the key?",
+          xp: 20,
+          opts: [
+            "The App creates it itself",
+            "The user types it into the keyboard",
+            "Google (the landlord) generates it after the user says it is okay",
+            "It is downloaded from GitHub",
+          ],
+          correct: 2,
+          feedback_correct:
+            'Yes! Google acts as the bouncer. When you click "Login", Google asks "Should we give this app a key?". If you say yes, Google hands our app the Golden Key.',
+          feedback_wrong:
+            "Google (the system) generates the token after you give it permission to do so. The app never sees your password.",
+        },
+
+        // ── 14. THE FINAL EXAM ──
+        {
+          type: "lesson",
+          badge: "Module 14 · THE FINAL EXAM 🏆",
+          emoji: "🔥",
+          title: "The Ultimate Gauntlet",
+          body: `
+<p>You have learned everything. You understand the Data, the Vectorizer (The Dictionary), the Naive Bayes Model (The Brain), and the OAuth flow (The Golden Key).</p>
+<p>Now it is time for the <strong>Final Exam</strong>. There are no more lessons.</p>
+<div class="visual-box" style="border-width: 4px; border-color: var(--danger); background: #fef2f2; color: #991b1b; transform: rotate(1deg);">
+<strong>⚠️ WARNING ⚠️</strong><br>
+The next 12 questions will test your memory of the entire project. The questions are harder, but they offer massive XP rewards. Your streak multiplier will be essential here.
+</div>
+<p style="text-align:center; font-family: 'Permanent Marker', cursive; font-size: 1.8rem; margin-top: 30px; color: var(--accent);">Take a deep breath. Click Next when you are ready to prove your mastery.</p>
+`,
+        },
+
+        // Exam Q1
+        {
+          type: "quiz",
+          q: "[Final Exam 1/12] What is the difference between a False Positive and a False Negative in our spam filter?",
+          xp: 30,
+          opts: [
+            "False Positive flags a bad email as ham; False Negative flags a good email as spam.",
+            "False Positive flags a good email as spam; False Negative lets a bad email slip into the inbox.",
+            "They are both the exact same thing but happen at different times of day.",
+            "False Positive means the model crashed; False Negative means the API failed.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Correct. A False Positive flags a legitimate email (ham) as spam. A False Negative misses actual spam.",
+          feedback_wrong:
+            "Incorrect. False Positive = Good email marked as Spam. False Negative = Spam email missed.",
+        },
+        // Exam Q2
+        {
+          type: "quiz",
+          q: '[Final Exam 2/12] Why is a False Positive considered the "worst" error for an email filter?',
+          xp: 30,
+          opts: [
+            "Because it crashes the server memory.",
+            "Because the user might miss a critical, legitimate email (like a job offer) because it got hidden in the spam folder.",
+            "Because the model will permanently delete the email.",
+            "Because it takes longer for the model to calculate.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly. Missing a real, important email is much worse for a user than seeing one extra piece of spam.",
+          feedback_wrong:
+            "A False Positive means a good email goes to the Spam folder. The user might never see a highly important email.",
+        },
+        // Exam Q3
+        {
+          type: "quiz",
+          q: '[Final Exam 3/12] What does CountVectorizer (The Dictionary) do with the words "the", "and", "is"?',
+          xp: 30,
+          opts: [
+            "It multiplies their importance by 10.",
+            "It translates them to numbers.",
+            'It completely removes them because they are "stop words" and provide no useful signal.',
+            "It asks Google what they mean.",
+          ],
+          correct: 2,
+          feedback_correct:
+            'Correct. "Stop words" appear in both spam and ham constantly, so we remove them to reduce noise.',
+          feedback_wrong:
+            'CountVectorizer removes them because they are "stop words" — they carry no predictive value for determining spam.',
+        },
+        // Exam Q4
+        {
+          type: "quiz",
+          q: '[Final Exam 4/12] What is the "Naive" assumption in our Multinomial Naive Bayes model?',
+          xp: 30,
+          opts: [
+            'It assumes all words appear independently of one another, ignoring phrase structure like "free money".',
+            "It assumes the user is naive to phishing attacks.",
+            "It assumes the dataset is perfectly accurate.",
+            "It assumes the email is written in English.",
+          ],
+          correct: 0,
+          feedback_correct:
+            'Spot on. It calculates the probability of "free" and the probability of "money" totally separately.',
+          feedback_wrong:
+            "The Naive assumption is statistical independence: it looks at every word individually, completely ignoring phrase context.",
+        },
+        // Exam Q5
+        {
+          type: "quiz",
+          q: "[Final Exam 5/12] How large is the combined dataset we used to train the model?",
+          xp: 30,
+          opts: [
+            "~5,000 emails",
+            "~65,000 emails",
+            "~1,000,000 emails",
+            "~20 emails",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Correct! By combining two public datasets, we trained on roughly 65,000 labelled emails.",
+          feedback_wrong:
+            "We combined two datasets (spam_ham_dataset.csv and emails.csv) for a total of exactly ~65,000 emails.",
+        },
+        // Exam Q6
+        {
+          type: "quiz",
+          q: "[Final Exam 6/12] Why did we use Naive Bayes instead of Linear SVM, even though SVM had ~1% higher accuracy?",
+          xp: 40,
+          opts: [
+            "SVM cannot be saved to a file.",
+            "Naive Bayes is significantly faster at predicting (microseconds vs seconds), which is critical for a real-time Streamlit app scanning 50 emails.",
+            "SVM requires a paid license.",
+            "Naive Bayes looks cooler in the code.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Correct. The tiny drop in accuracy was worth the massive, 4-5x speed improvement for real-time inference.",
+          feedback_wrong:
+            "Speed! Naive Bayes predicts in literal microseconds, while SVM takes much longer. We need real-time speed in the app.",
+        },
+        // Exam Q7
+        {
+          type: "quiz",
+          q: "[Final Exam 7/12] What happens when you call `vectorizer.fit_transform()` on TEST data instead of just `transform()`?",
+          xp: 40,
+          opts: [
+            "Nothing, it does the exact same thing.",
+            'It causes "data leakage" because the model learns the unseen test vocabulary, giving you a fake, artificially high accuracy score.',
+            "It deletes the test data by accident.",
+            "It converts the text back into English words.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Perfect. You MUST NOT fit your vectorizer on Test data, or your evaluation metrics become totally meaningless.",
+          feedback_wrong:
+            "It causes data leakage. You only fit on train data. If you fit on test data, the model peeks at the answers.",
+        },
+        // Exam Q8
+        {
+          type: "quiz",
+          q: "[Final Exam 8/12] Why do we save the trained model into a `.pkl` (pickle) file?",
+          xp: 40,
+          opts: [
+            "Because pickles are tasty.",
+            "So the Streamlit app doesn't have to spend time re-training the model on 65,000 emails every single time a user clicks a button.",
+            "To encrypt the model so hackers cannot steal it.",
+            "Because Python cannot read CSV files.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Correct! Training takes a long time. Predicting is fast. We train offline, save the brain state (.pkl), and load it instantly.",
+          feedback_wrong:
+            "We save the model so we don't have to re-train it. The Streamlit app just loads the pre-trained weights instantly.",
+        },
+        // Exam Q9
+        {
+          type: "quiz",
+          q: "[Final Exam 9/12] Why is `st.session_state` crucial for our Streamlit interface?",
+          xp: 40,
+          opts: [
+            "It makes the UI background dark.",
+            "Streamlit reruns the entire python script every click. session_state is the ONLY way to remember variables (like the login token and model) between clicks.",
+            "It prevents the user from clicking buttons too fast.",
+            "It sends analytics back to the developer.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly. Without session state, you would have to log into Google again every time you clicked a checkbox.",
+          feedback_wrong:
+            "Streamlit's architecture reruns code top-to-bottom on every interaction. `session_state` prevents data amnesia between runs.",
+        },
+        // Exam Q10
+        {
+          type: "quiz",
+          q: "[Final Exam 10/12] In our Golden Key analogy for OAuth, what does the key allow our app to do?",
+          xp: 30,
+          opts: [
+            "It allows the app to read all passwords stored on the browser.",
+            "It provides a strictly limited-scope access token (gmail.modify) to read and organize emails, without ever seeing the master password.",
+            "It installs an antivirus on the computer.",
+            "It bypasses two-factor authentication permanently.",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Correct. OAuth scope limits the token so it can ONLY read emails, protecting the user's full Google account.",
+          feedback_wrong:
+            'It provides a limited "scope" token. We never see the user password, and we can only read emails, nothing else.',
+        },
+        // Exam Q11
+        {
+          type: "quiz",
+          q: '[Final Exam 11/12] If our dataset is extremely imbalanced (e.g. 99% of emails are ham), what happens if a dumb model predicts EVERY email as "ham"?',
+          xp: 50,
+          opts: [
+            "The model crashes because it never predicted spam.",
+            "The model gets 99% Accuracy, but catches zero spam — proving why we need F1-score and Recall, not just Accuracy.",
+            "The model's Vectorizer deletes itself.",
+            "Accuracy drops to 0% immediately.",
+          ],
+          correct: 1,
+          feedback_correct:
+            'Brilliant. This is "The Accuracy Paradox." Accuracy is a terrible metric for imbalanced data. That\'s why we look at Precision, Recall, and the Confusion Matrix.',
+          feedback_wrong:
+            "It will get 99% accuracy! But it's entirely useless because it catches no spam. This shows why accuracy is a flawed metric for imbalanced datasets.",
+        },
+        // Exam Q12
+        {
+          type: "quiz",
+          q: "[Final Exam 12/12] In our application architecture, where does the `base64` decoding happen?",
+          xp: 50,
+          opts: [
+            "Inside the ML Model.",
+            "Inside Streamlit session state.",
+            "Inside `gmail_service.py`, because the Gmail API returns email bodies compressed in a base64 string.",
+            "Inside the CountVectorizer.",
+          ],
+          correct: 2,
+          feedback_correct:
+            "Absolutely perfect! The Gmail API returns weird base64 strings. `gmail_service.py` decodes them back into plain English before passing them to the brain. YOU NAILED IT!",
+          feedback_wrong:
+            "The Gmail API returns emails wrapped in `base64` encoding. Our `gmail_service.py` decodes it back into plain English.",
+        },
+      ];
+
+      // ═══════════════════════════════════════════════
+      //  STEPS  (lessons + quizzes interleaved)
+      // ═══════════════════════════════════════════════
+      const STEPS = [
+        // ── 1. What is spam? ──
+        {
+          type: "lesson",
+          badge: "Module 1 · The Problem",
+          emoji: "📬",
+          title: "What is Spam and Why Does It Matter?",
+          body: `
 <p>Every day, billions of emails are sent worldwide. But a huge chunk of them are <strong>spam</strong> — unwanted, unsolicited messages that clog your inbox.</p>
 <div class="visual-box"><strong>📊 Spam by the numbers</strong>45% of all emails sent globally are spam. That's roughly 160 billion spam emails per day.</div>
 <p>In the world of email classification, we use two labels:</p>
@@ -890,21 +1279,33 @@
 <p>The word "ham" (meaning legitimate email) was coined by early spam researchers to rhyme with "spam" as a pair of opposites.</p>
 <div class="fun-fact">The term "spam" in email comes from a Monty Python sketch where Vikings sing "SPAM SPAM SPAM" relentlessly — just like spam emails.</div>
 <p>Our project automatically identifies which of your Gmail emails are spam and gives you tools to clean them up in seconds — powered by Machine Learning.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'What does "HAM" mean in email classification?',
-                xp: 20, opts: ['A type of spam email that contains attachments', 'Legitimate email you actually want', 'Emails from unknown senders', 'Marketing newsletters'],
-                correct: 1,
-                feedback_correct: 'Exactly right! HAM = legitimate email. SPAM = unwanted email. These two labels form the foundation of binary email classification.',
-                feedback_wrong: 'Close! In email classification, HAM means legitimate, good email — the kind you want in your inbox. SPAM is the opposite.'
-            },
+        {
+          type: "quiz",
+          q: 'What does "HAM" mean in email classification?',
+          xp: 20,
+          opts: [
+            "A type of spam email that contains attachments",
+            "Legitimate email you actually want",
+            "Emails from unknown senders",
+            "Marketing newsletters",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly right! HAM = legitimate email. SPAM = unwanted email. These two labels form the foundation of binary email classification.",
+          feedback_wrong:
+            "Close! In email classification, HAM means legitimate, good email — the kind you want in your inbox. SPAM is the opposite.",
+        },
 
-            // ── 2. Our Dataset ──
-            {
-                type: 'lesson', badge: 'Module 2 · The Data', emoji: '🗄️',
-                title: 'Where Does Our Model Learn From?',
-                body: `
+        // ── 2. Our Dataset ──
+        {
+          type: "lesson",
+          badge: "Module 2 · The Data",
+          emoji: "🗄️",
+          title: "Where Does Our Model Learn From?",
+          body: `
 <p>A Machine Learning model is only as good as its training data. We trained ours on <strong>~65,000 real labelled emails</strong> from two different datasets.</p>
 <div class="visual-box">
 <strong>📁 Dataset 1: spam_ham_dataset.csv</strong>Contains 'text' and 'label_num' columns. 1 = spam, 0 = ham.
@@ -917,21 +1318,33 @@ df = pd.concat([df1[['text','label_num']], df2[['text','label_num']]])
 <span class="cm"># ~65,000 emails total</span></div>
 <p>Why two datasets? More data = better generalisation. If you only train on one narrow source, the model might miss spam patterns it has never seen. Two independent sources give a <strong>wider vocabulary of spam.</strong></p>
 <p>The data was then split <strong>80% for training</strong> and <strong>20% for testing</strong> — the model never sees the test set during training, so we can fairly measure performance.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'Why did we merge TWO datasets instead of using just one?',
-                xp: 20, opts: ['To make the file size bigger', 'To have more variety of spam patterns so the model generalises better', 'Because one dataset was corrupted', 'To duplicate data for higher accuracy'],
-                correct: 1,
-                feedback_correct: 'Perfect! More diverse data = better generalisation. A model trained on only one source might miss spam patterns from other regions, eras, or types.',
-                feedback_wrong: 'Not quite. The reason for merging two datasets is to expose the model to a wider variety of spam patterns, making it more robust on new, unseen emails.'
-            },
+        {
+          type: "quiz",
+          q: "Why did we merge TWO datasets instead of using just one?",
+          xp: 20,
+          opts: [
+            "To make the file size bigger",
+            "To have more variety of spam patterns so the model generalises better",
+            "Because one dataset was corrupted",
+            "To duplicate data for higher accuracy",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Perfect! More diverse data = better generalisation. A model trained on only one source might miss spam patterns from other regions, eras, or types.",
+          feedback_wrong:
+            "Not quite. The reason for merging two datasets is to expose the model to a wider variety of spam patterns, making it more robust on new, unseen emails.",
+        },
 
-            // ── 3. Text to Numbers ──
-            {
-                type: 'lesson', badge: 'Module 3 · Preprocessing', emoji: '🔢',
-                title: 'How Do We Turn Emails Into Numbers?',
-                body: `
+        // ── 3. Text to Numbers ──
+        {
+          type: "lesson",
+          badge: "Module 3 · Preprocessing",
+          emoji: "🔢",
+          title: "How Do We Turn Emails Into Numbers?",
+          body: `
 <p>Machine Learning models can only work with <strong>numbers</strong>. But emails are text. So we need to convert text into numerical form — this process is called <strong>vectorisation</strong>.</p>
 <p>We use <strong>CountVectorizer</strong>, which converts each email into a vector of word counts:</p>
 <div class="visual-box">
@@ -946,29 +1359,50 @@ X_train_vec = vectorizer.fit_transform(X_train)</div>
 <p><strong>Stop words</strong> are very common English words like "the", "is", "and" — they appear in every email regardless of whether it's spam or not. Removing them reduces noise and keeps only meaningful words.</p>
 <div class="fun-fact">After vectorisation, each email is represented as a vector with ~100,000 dimensions — one per unique vocabulary word! Most values are 0, so it's stored as a "sparse matrix" to save memory.</div>
 <p>The vectorizer is <strong>fitted on training data only</strong>, then used to transform the test data. This prevents "data leakage" — the model can't peek at test vocabulary during training.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'What does CountVectorizer do to an email?',
-                xp: 20, opts: ['Counts how many emails are spam', 'Converts email text into a vector of word counts', 'Removes spam emails from the dataset', 'Sends the email to a spam folder'],
-                correct: 1,
-                feedback_correct: 'Spot on! CountVectorizer converts each email into a vector of word counts — turning text into numbers that the ML model can understand.',
-                feedback_wrong: 'Not quite. CountVectorizer converts email text into a numerical vector (word counts), which is the form ML models need to process data.'
-            },
+        {
+          type: "quiz",
+          q: "What does CountVectorizer do to an email?",
+          xp: 20,
+          opts: [
+            "Counts how many emails are spam",
+            "Converts email text into a vector of word counts",
+            "Removes spam emails from the dataset",
+            "Sends the email to a spam folder",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Spot on! CountVectorizer converts each email into a vector of word counts — turning text into numbers that the ML model can understand.",
+          feedback_wrong:
+            "Not quite. CountVectorizer converts email text into a numerical vector (word counts), which is the form ML models need to process data.",
+        },
 
-            {
-                type: 'quiz', q: 'Why do we remove "stop words" like "the", "is", "and"?',
-                xp: 20, opts: ['They are too long to process', 'They appear in every email regardless of class, so they add noise not signal', 'They are only found in spam emails', 'They slow down the server'],
-                correct: 1,
-                feedback_correct: 'Exactly right! Stop words appear equally in spam and ham — they give the model zero useful information about which class an email belongs to. Removing them sharpens the model\'s focus.',
-                feedback_wrong: 'The correct reason: stop words appear in ALL emails equally (spam and ham), so they carry no predictive signal. Removing them reduces the feature space and improves performance.'
-            },
+        {
+          type: "quiz",
+          q: 'Why do we remove "stop words" like "the", "is", "and"?',
+          xp: 20,
+          opts: [
+            "They are too long to process",
+            "They appear in every email regardless of class, so they add noise not signal",
+            "They are only found in spam emails",
+            "They slow down the server",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly right! Stop words appear equally in spam and ham — they give the model zero useful information about which class an email belongs to. Removing them sharpens the model's focus.",
+          feedback_wrong:
+            "The correct reason: stop words appear in ALL emails equally (spam and ham), so they carry no predictive signal. Removing them reduces the feature space and improves performance.",
+        },
 
-            // ── 4. Naive Bayes ──
-            {
-                type: 'lesson', badge: 'Module 4 · The Model', emoji: '🧠',
-                title: 'How Does Naive Bayes Work?',
-                body: `
+        // ── 4. Naive Bayes ──
+        {
+          type: "lesson",
+          badge: "Module 4 · The Model",
+          emoji: "🧠",
+          title: "How Does Naive Bayes Work?",
+          body: `
 <p><strong>Multinomial Naive Bayes</strong> is a probabilistic algorithm based on Bayes' theorem. It answers the question:</p>
 <div class="visual-box"><strong>Given these words in an email, what is the probability it is spam?</strong>
 P(spam | words) = P(words | spam) × P(spam) / P(words)</div>
@@ -987,21 +1421,33 @@ model.fit(X_train_vec, y_train)
 prediction = model.predict(new_email_vec)</div>
 <div class="fun-fact">Naive Bayes spam filtering was popularised by Paul Graham's 2002 essay "A Plan for Spam" and was the algorithm behind early Gmail spam filters!</div>
 <p><strong>Laplace smoothing</strong> (alpha=1.0 by default) prevents zero-probability issues. If a word never appeared in training spam but shows up in a test email, without smoothing the spam probability would be 0 — making it impossible to classify the email.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'What is the "Naive" assumption in Naive Bayes?',
-                xp: 20, opts: ['The model is not very accurate', 'Each word in an email is assumed to be independent of every other word', 'The model assumes all emails are spam by default', 'It only works on short emails'],
-                correct: 1,
-                feedback_correct: 'Correct! The "naive" independence assumption says every word contributes independently to spam probability — ignoring phrase-level patterns. It\'s not realistic but works very well.',
-                feedback_wrong: 'The "naive" part refers to the independence assumption: it treats each word as independent of all others. "free" and "money" are treated separately even though together they\'re a much stronger spam signal.'
-            },
+        {
+          type: "quiz",
+          q: 'What is the "Naive" assumption in Naive Bayes?',
+          xp: 20,
+          opts: [
+            "The model is not very accurate",
+            "Each word in an email is assumed to be independent of every other word",
+            "The model assumes all emails are spam by default",
+            "It only works on short emails",
+          ],
+          correct: 1,
+          feedback_correct:
+            'Correct! The "naive" independence assumption says every word contributes independently to spam probability — ignoring phrase-level patterns. It\'s not realistic but works very well.',
+          feedback_wrong:
+            'The "naive" part refers to the independence assumption: it treats each word as independent of all others. "free" and "money" are treated separately even though together they\'re a much stronger spam signal.',
+        },
 
-            // ── 5. Training the model ──
-            {
-                type: 'lesson', badge: 'Module 5 · Training', emoji: '⚙️',
-                title: 'Training the Model — Step by Step',
-                body: `
+        // ── 5. Training the model ──
+        {
+          type: "lesson",
+          badge: "Module 5 · Training",
+          emoji: "⚙️",
+          title: "Training the Model — Step by Step",
+          body: `
 <p>Training happens once in <span style="color:#a5b4fc;font-family:monospace">train_model.py</span>. The trained model is saved as files and loaded by the app every time it starts.</p>
 <div class="flow-row">
   <div class="flow-node">Load CSVs</div><div class="flow-arr">→</div>
@@ -1030,21 +1476,33 @@ joblib.dump(model,      <span class="cs">'spam_model.pkl'</span>)
 joblib.dump(vectorizer, <span class="cs">'vectorizer.pkl'</span>)</div>
 <p>Notice: vectorizer.fit_transform is called on <strong>train data only</strong>, but vectorizer.transform (no fit) is called on test data. This ensures the model has never "seen" the test vocabulary — giving a fair performance measurement.</p>
 <div class="fun-fact">random_state=42 makes the split reproducible. Every time you run the code you get the exact same train/test division — essential for consistent accuracy reporting.</div>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'Why do we call vectorizer.transform() (not fit_transform) on the TEST data?',
-                xp: 20, opts: ['fit_transform is too slow for test data', 'To prevent data leakage — the model must not see test vocabulary during training', 'The test data is already vectorised', 'transform returns a different format needed for testing'],
-                correct: 1,
-                feedback_correct: 'Brilliant! This is a crucial ML principle. Fitting the vectorizer on test data would let the model "peek" at unseen words, inflating accuracy. We fit ONLY on train, then transform test with the same vocabulary.',
-                feedback_wrong: 'The correct reason is data leakage prevention. If we fit_transform on test data too, the vectorizer learns the test vocabulary during training — meaning the model effectively saw the test data, making accuracy measurements unreliable.'
-            },
+        {
+          type: "quiz",
+          q: "Why do we call vectorizer.transform() (not fit_transform) on the TEST data?",
+          xp: 20,
+          opts: [
+            "fit_transform is too slow for test data",
+            "To prevent data leakage — the model must not see test vocabulary during training",
+            "The test data is already vectorised",
+            "transform returns a different format needed for testing",
+          ],
+          correct: 1,
+          feedback_correct:
+            'Brilliant! This is a crucial ML principle. Fitting the vectorizer on test data would let the model "peek" at unseen words, inflating accuracy. We fit ONLY on train, then transform test with the same vocabulary.',
+          feedback_wrong:
+            "The correct reason is data leakage prevention. If we fit_transform on test data too, the vectorizer learns the test vocabulary during training — meaning the model effectively saw the test data, making accuracy measurements unreliable.",
+        },
 
-            // ── 6. Metrics ──
-            {
-                type: 'lesson', badge: 'Module 6 · Measuring Success', emoji: '📊',
-                title: 'How Do We Know If the Model Is Good?',
-                body: `
+        // ── 6. Metrics ──
+        {
+          type: "lesson",
+          badge: "Module 6 · Measuring Success",
+          emoji: "📊",
+          title: "How Do We Know If the Model Is Good?",
+          body: `
 <p>Our model achieves <strong>~98% accuracy</strong> on the test set. But accuracy alone is not enough — here's why:</p>
 <div class="visual-box"><strong>⚠️ The Accuracy Trap</strong>Imagine 95% of emails are ham. A dumb model that ALWAYS predicts "ham" would get 95% accuracy — but it catches zero spam! Accuracy alone is misleading on imbalanced datasets.</div>
 <p>We use 5 metrics together:</p>
@@ -1063,29 +1521,50 @@ joblib.dump(vectorizer, <span class="cs">'vectorizer.pkl'</span>)</div>
 <br/>Actual SPAM &nbsp;[ FN ❌ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| TP ✅ ]
 </div>
 <p>For a spam filter, <strong>False Positives are the worst outcome</strong>. A False Positive means a legitimate email (a job offer, a bank email) gets moved to spam — the user might never see it.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'You have a spam filter. It marks a legitimate job offer email as SPAM. What type of error is this?',
-                xp: 20, opts: ['True Positive', 'True Negative', 'False Positive', 'False Negative'],
-                correct: 2,
-                feedback_correct: 'Correct! A False Positive is when a legitimate email (ham) is incorrectly classified as spam. This is the worst error for a user-facing spam filter — the user loses real emails.',
-                feedback_wrong: 'This is a False Positive. The email is actually ham (negative class), but we predicted spam (positive). False Positive = ham wrongly flagged as spam. The most damaging error in a spam filter.'
-            },
+        {
+          type: "quiz",
+          q: "You have a spam filter. It marks a legitimate job offer email as SPAM. What type of error is this?",
+          xp: 20,
+          opts: [
+            "True Positive",
+            "True Negative",
+            "False Positive",
+            "False Negative",
+          ],
+          correct: 2,
+          feedback_correct:
+            "Correct! A False Positive is when a legitimate email (ham) is incorrectly classified as spam. This is the worst error for a user-facing spam filter — the user loses real emails.",
+          feedback_wrong:
+            "This is a False Positive. The email is actually ham (negative class), but we predicted spam (positive). False Positive = ham wrongly flagged as spam. The most damaging error in a spam filter.",
+        },
 
-            {
-                type: 'quiz', q: 'Our model has ~98% accuracy. What does the REMAINING ~2% represent?',
-                xp: 20, opts: ['The model is 2% biased', 'Approximately 2% of test emails were misclassified (false positives + false negatives)', 'The model was only trained on 98% of the data', '2% of words were ignored during vectorisation'],
-                correct: 1,
-                feedback_correct: 'Spot on! The ~2% error rate means roughly 2 in every 100 test emails were misclassified — either spam that slipped through (FN) or ham wrongly flagged as spam (FP).',
-                feedback_wrong: 'The ~2% represents the model\'s error rate — about 2 in 100 emails are misclassified. This includes both false positives (ham flagged as spam) and false negatives (spam not caught).'
-            },
+        {
+          type: "quiz",
+          q: "Our model has ~98% accuracy. What does the REMAINING ~2% represent?",
+          xp: 20,
+          opts: [
+            "The model is 2% biased",
+            "Approximately 2% of test emails were misclassified (false positives + false negatives)",
+            "The model was only trained on 98% of the data",
+            "2% of words were ignored during vectorisation",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Spot on! The ~2% error rate means roughly 2 in every 100 test emails were misclassified — either spam that slipped through (FN) or ham wrongly flagged as spam (FP).",
+          feedback_wrong:
+            "The ~2% represents the model's error rate — about 2 in 100 emails are misclassified. This includes both false positives (ham flagged as spam) and false negatives (spam not caught).",
+        },
 
-            // ── 7. Model Comparison ──
-            {
-                type: 'lesson', badge: 'Module 7 · Why Our Model?', emoji: '⚖️',
-                title: 'We Tested 5 Models — Here\'s Why We Chose Naive Bayes',
-                body: `
+        // ── 7. Model Comparison ──
+        {
+          type: "lesson",
+          badge: "Module 7 · Why Our Model?",
+          emoji: "⚖️",
+          title: "We Tested 5 Models — Here's Why We Chose Naive Bayes",
+          body: `
 <p>Before choosing Naive Bayes, we benchmarked 5 different classifiers on the exact same dataset and test split:</p>
 <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin:14px 0;">
 <table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -1105,21 +1584,33 @@ joblib.dump(vectorizer, <span class="cs">'vectorizer.pkl'</span>)</div>
 <p>SVM is ~1% more accurate — but takes 4-5× longer to train and predict. Since our app classifies emails <strong>in real time</strong> during every inbox scan, Naive Bayes's microsecond inference speed matters. The accuracy difference is negligible.</p>
 <p>KNN performs worst because of the <strong>curse of dimensionality</strong> — with 50,000+ word features, "nearest neighbours" in that space become meaningless.</p>
 <div class="fun-fact">Naive Bayes was literally invented for spam filtering. Paul Graham's 2002 essay "A Plan for Spam" sparked the modern era of Bayesian email filtering — it's the algorithm's home turf.</div>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'Linear SVM scores ~1% higher accuracy than Naive Bayes. So why did we still choose Naive Bayes for production?',
-                xp: 20, opts: ['SVM is harder to implement', 'Naive Bayes is faster to train/predict and 1% accuracy difference is negligible for a real-time app', 'SVM does not work with text data', 'The project budget was limited'],
-                correct: 1,
-                feedback_correct: 'Exactly! In a real-time app, prediction speed matters. Naive Bayes classifies in microseconds vs SVM which is 4-5x slower. A ~1% accuracy trade-off for massive speed gains is worth it.',
-                feedback_wrong: 'The key reason is speed vs accuracy trade-off. Naive Bayes predicts in microseconds. SVM takes 4-5x longer per prediction. Since our app classifies emails in real time, Naive Bayes is the pragmatic production choice despite SVM\'s tiny accuracy edge.'
-            },
+        {
+          type: "quiz",
+          q: "Linear SVM scores ~1% higher accuracy than Naive Bayes. So why did we still choose Naive Bayes for production?",
+          xp: 20,
+          opts: [
+            "SVM is harder to implement",
+            "Naive Bayes is faster to train/predict and 1% accuracy difference is negligible for a real-time app",
+            "SVM does not work with text data",
+            "The project budget was limited",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly! In a real-time app, prediction speed matters. Naive Bayes classifies in microseconds vs SVM which is 4-5x slower. A ~1% accuracy trade-off for massive speed gains is worth it.",
+          feedback_wrong:
+            "The key reason is speed vs accuracy trade-off. Naive Bayes predicts in microseconds. SVM takes 4-5x longer per prediction. Since our app classifies emails in real time, Naive Bayes is the pragmatic production choice despite SVM's tiny accuracy edge.",
+        },
 
-            // ── 8. Gmail API ──
-            {
-                type: 'lesson', badge: 'Module 8 · The API', emoji: '📬',
-                title: 'How Do We Connect to Gmail?',
-                body: `
+        // ── 8. Gmail API ──
+        {
+          type: "lesson",
+          badge: "Module 8 · The API",
+          emoji: "📬",
+          title: "How Do We Connect to Gmail?",
+          body: `
 <p>The app connects to your real Gmail inbox using the <strong>Gmail API</strong> with <strong>OAuth 2.0 authentication</strong>.</p>
 <div class="flow-row">
   <div class="flow-node">User clicks Login</div><div class="flow-arr">→</div>
@@ -1142,21 +1633,33 @@ service.users().messages().modify(userId=<span class="cs">'me'</span>, id=msg_id
           <span class="cs">'addLabelIds'</span>: [<span class="cs">'SPAM'</span>]}).execute()</div>
 <p>Gmail API returns email content encoded in <strong>base64 URL-safe</strong> format — we decode it, extract the subject and body, then feed that text string into the SpamFilter model.</p>
 <p>Credentials are stored in <span style="color:#a5b4fc;font-family:monospace">credentials.json</span> and the reusable token in <span style="color:#a5b4fc;font-family:monospace">token.json</span> — both excluded from GitHub via <span style="color:#a5b4fc;font-family:monospace">.gitignore</span> for security.</p>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'What is OAuth 2.0 used for in this project?',
-                xp: 20, opts: ['Encrypting email bodies before classification', 'Letting users log in to Gmail without giving us their password', 'Compressing email attachments', 'Generating spam labels automatically'],
-                correct: 1,
-                feedback_correct: 'Exactly right! OAuth 2.0 is the industry-standard authorisation protocol. Users grant us a limited-scope token — we never see or store their Gmail password.',
-                feedback_wrong: 'OAuth 2.0 is the authorisation protocol that lets the user grant our app access to their Gmail without revealing their password. Google issues a scoped token instead, which the user can revoke any time.'
-            },
+        {
+          type: "quiz",
+          q: "What is OAuth 2.0 used for in this project?",
+          xp: 20,
+          opts: [
+            "Encrypting email bodies before classification",
+            "Letting users log in to Gmail without giving us their password",
+            "Compressing email attachments",
+            "Generating spam labels automatically",
+          ],
+          correct: 1,
+          feedback_correct:
+            "Exactly right! OAuth 2.0 is the industry-standard authorisation protocol. Users grant us a limited-scope token — we never see or store their Gmail password.",
+          feedback_wrong:
+            "OAuth 2.0 is the authorisation protocol that lets the user grant our app access to their Gmail without revealing their password. Google issues a scoped token instead, which the user can revoke any time.",
+        },
 
-            // ── 9. App Flow ──
-            {
-                type: 'lesson', badge: 'Module 9 · The Full Picture', emoji: '🖥️',
-                title: 'How It All Fits Together',
-                body: `
+        // ── 9. App Flow ──
+        {
+          type: "lesson",
+          badge: "Module 9 · The Full Picture",
+          emoji: "🖥️",
+          title: "How It All Fits Together",
+          body: `
 <p>The Streamlit app is the glue that connects every component. Here is the complete end-to-end flow:</p>
 <div class="flow-row">
   <div class="flow-node">👤 User</div><div class="flow-arr">→</div>
@@ -1181,87 +1684,109 @@ spam_model.pkl → saved trained model (~2 MB)
 vectorizer.pkl → saved vectorizer (~0.8 MB)</div>
 <p>The model and vectorizer are saved as <span style="color:#a5b4fc;font-family:monospace">.pkl</span> files using <strong>joblib</strong>. They are loaded once per session and cached in session state — so classification happens in microseconds even for 50 emails.</p>
 <div class="fun-fact">The entire ML prediction pipeline — vectorise email text, multiply 100k word probabilities, return spam/ham — takes less than 1 millisecond per email on any modern laptop!</div>
-`},
+`,
+        },
 
-            {
-                type: 'quiz', q: 'What is the purpose of st.session_state in the Streamlit app?',
-                xp: 20, opts: ['To store emails in a database', 'To persist data (like the model and login) between script re-runs so the user doesn\'t reload on every click', 'To manage the Gmail API quota', 'To store the app\'s visual theme settings'],
-                correct: 1,
-                feedback_correct: 'You got it! Streamlit re-runs the whole script on every interaction. session_state is the way to persist objects (model, Gmail connection, scan results) across those re-runs without reloading them each time.',
-                feedback_wrong: 'Streamlit re-runs the entire Python script on every button click. Without session_state, the model would reload and the user would need to log in again on every action. session_state persists these objects across re-runs.'
-            },
+        {
+          type: "quiz",
+          q: "What is the purpose of st.session_state in the Streamlit app?",
+          xp: 20,
+          opts: [
+            "To store emails in a database",
+            "To persist data (like the model and login) between script re-runs so the user doesn't reload on every click",
+            "To manage the Gmail API quota",
+            "To store the app's visual theme settings",
+          ],
+          correct: 1,
+          feedback_correct:
+            "You got it! Streamlit re-runs the whole script on every interaction. session_state is the way to persist objects (model, Gmail connection, scan results) across those re-runs without reloading them each time.",
+          feedback_wrong:
+            "Streamlit re-runs the entire Python script on every button click. Without session_state, the model would reload and the user would need to log in again on every action. session_state persists these objects across re-runs.",
+        },
+      ];
 
-        ];
+      // ═══════════════════════════════════════════════
+      //  XP & LEVEL SYSTEM
+      // ═══════════════════════════════════════════════
+      function addXP(amount) {
+        xp += amount;
+        const prevLevel = level;
+        updateLevel();
+        updateHUD();
+        showToast("+" + amount + " XP ⚡");
+        if (level > prevLevel) triggerLevelUp();
+      }
 
-        // ═══════════════════════════════════════════════
-        //  XP & LEVEL SYSTEM
-        // ═══════════════════════════════════════════════
-        function addXP(amount) {
-            xp += amount;
-            const prevLevel = level;
-            updateLevel();
-            updateHUD();
-            showToast('+' + amount + ' XP ⚡');
-            if (level > prevLevel) triggerLevelUp();
+      function updateLevel() {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) {
+            level = i + 1;
+            break;
+          }
         }
+      }
 
-        function updateLevel() {
-            for (let i = LEVELS.length - 1; i >= 0; i--) {
-                if (xp >= LEVELS[i].minXp) { level = i + 1; break; }
-            }
-        }
+      function updateHUD() {
+        const lv = LEVELS[level - 1];
+        const nextLv = LEVELS[level] || null;
+        document.getElementById("hud-level").textContent =
+          "Level " + level + " — " + lv.name;
+        document.getElementById("hud-xp-text").textContent = xp;
+        const maxXp = nextLv ? nextLv.minXp : xp;
+        const baseXp = lv.minXp;
+        const pct = nextLv
+          ? Math.min(100, Math.round(((xp - baseXp) / (maxXp - baseXp)) * 100))
+          : 100;
+        document.getElementById("hud-xp-max").textContent = nextLv
+          ? nextLv.minXp
+          : xp;
+        document.getElementById("hud-xp-fill").style.width = pct + "%";
+        document.getElementById("hud-streak").textContent = streak;
+        document.getElementById("hud-correct").textContent = correctCount;
+        const total = STEPS.length;
+        document.getElementById("progress-overall").textContent =
+          "Step " + (currentStep + 1) + " / " + total;
+      }
 
-        function updateHUD() {
-            const lv = LEVELS[level - 1];
-            const nextLv = LEVELS[level] || null;
-            document.getElementById('hud-level').textContent = 'Level ' + level + ' — ' + lv.name;
-            document.getElementById('hud-xp-text').textContent = xp;
-            const maxXp = nextLv ? nextLv.minXp : xp;
-            const baseXp = lv.minXp;
-            const pct = nextLv ? Math.min(100, Math.round((xp - baseXp) / (maxXp - baseXp) * 100)) : 100;
-            document.getElementById('hud-xp-max').textContent = nextLv ? nextLv.minXp : xp;
-            document.getElementById('hud-xp-fill').style.width = pct + '%';
-            document.getElementById('hud-streak').textContent = streak;
-            document.getElementById('hud-correct').textContent = correctCount;
-            const total = STEPS.length;
-            document.getElementById('progress-overall').textContent = 'Step ' + (currentStep + 1) + ' / ' + total;
-        }
+      function showToast(msg) {
+        const t = document.getElementById("xp-toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 1800);
+      }
 
-        function showToast(msg) {
-            const t = document.getElementById('xp-toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 1800);
-        }
+      function triggerLevelUp() {
+        const lv = LEVELS[level - 1];
+        document.getElementById("lu-title").textContent =
+          "Level " + level + "!";
+        document.getElementById("lu-desc").textContent =
+          "You unlocked: " + lv.name;
+        const ov = document.getElementById("levelup-overlay");
+        ov.classList.add("show");
+      }
+      function closeLevelUp() {
+        document.getElementById("levelup-overlay").classList.remove("show");
+      }
 
-        function triggerLevelUp() {
-            const lv = LEVELS[level - 1];
-            document.getElementById('lu-title').textContent = 'Level ' + level + '!';
-            document.getElementById('lu-desc').textContent = 'You unlocked: ' + lv.name;
-            const ov = document.getElementById('levelup-overlay');
-            ov.classList.add('show');
-        }
-        function closeLevelUp() { document.getElementById('levelup-overlay').classList.remove('show'); }
+      // ═══════════════════════════════════════════════
+      //  STEP RENDERER
+      // ═══════════════════════════════════════════════
+      function renderStep() {
+        questionAnswered = false;
+        const step = STEPS[currentStep];
+        const container = document.getElementById("lesson-content");
 
-        // ═══════════════════════════════════════════════
-        //  STEP RENDERER
-        // ═══════════════════════════════════════════════
-        function renderStep() {
-            questionAnswered = false;
-            const step = STEPS[currentStep];
-            const container = document.getElementById('lesson-content');
+        // dots
+        const dots = document.getElementById("step-dots");
+        dots.innerHTML = STEPS.map((s, i) => {
+          let cls = "step-dot";
+          if (i < currentStep) cls += " done";
+          else if (i === currentStep) cls += " active";
+          return '<div class="' + cls + '" title="Step ' + (i + 1) + '"></div>';
+        }).join("");
 
-            // dots
-            const dots = document.getElementById('step-dots');
-            dots.innerHTML = STEPS.map((s, i) => {
-                let cls = 'step-dot';
-                if (i < currentStep) cls += ' done';
-                else if (i === currentStep) cls += ' active';
-                return '<div class="' + cls + '" title="Step ' + (i + 1) + '"></div>';
-            }).join('');
-
-            if (step.type === 'lesson') {
-                container.innerHTML = `
+        if (step.type === "lesson") {
+          container.innerHTML = `
       <div class="lesson-card">
         <div class="lesson-badge">${step.emoji} ${step.badge}</div>
         <h2>${step.title}</h2>
@@ -1269,15 +1794,19 @@ vectorizer.pkl → saved vectorizer (~0.8 MB)</div>
       </div>
       <button class="btn-next visible" onclick="nextStep()">Next →</button>
     `;
-            } else {
-                totalQuestions++;
-                const keys = ['A', 'B', 'C', 'D'];
-                const optsHTML = step.opts.map((o, i) => `
+        } else {
+          totalQuestions++;
+          const keys = ["A", "B", "C", "D"];
+          const optsHTML = step.opts
+            .map(
+              (o, i) => `
       <button class="opt" id="opt-${i}" onclick="answerQuiz(${i}, ${step.correct}, ${step.xp})">
         <span class="opt-key">${keys[i]}</span> ${o}
-      </button>`).join('');
+      </button>`,
+            )
+            .join("");
 
-                container.innerHTML = `
+          container.innerHTML = `
       <div class="quiz-card">
         <div class="quiz-header">
           <div class="quiz-icon">❓</div>
@@ -1289,86 +1818,111 @@ vectorizer.pkl → saved vectorizer (~0.8 MB)</div>
       </div>
       <button class="btn-next" id="btn-next-quiz" onclick="nextStep()">Next →</button>
     `;
-            }
-
-            updateHUD();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function answerQuiz(chosen, correct, xpAmount) {
-            if (questionAnswered) return;
-            questionAnswered = true;
-
-            const opts = document.querySelectorAll('.opt');
-            opts.forEach(o => o.disabled = true);
-            opts[chosen].classList.add(chosen === correct ? 'correct' : 'wrong');
-            opts[correct].classList.add('correct');
-
-            const step = STEPS[currentStep];
-            const fb = document.getElementById('feedback');
-            fb.style.display = 'block';
-
-            if (chosen === correct) {
-                correctCount++; answeredCorrectly++;
-                streak++;
-                if (streak > bestStreak) bestStreak = streak;
-                fb.className = 'feedback-box correct';
-                fb.innerHTML = '<p>✅ <strong>' + (streak > 1 ? '🔥 ' + streak + ' streak! ' : '') + 'Correct!</strong></p><p>' + step.feedback_correct + '</p>';
-                addXP(xpAmount + (streak >= 3 ? 5 : 0)); // streak bonus
-            } else {
-                streak = 0;
-                fb.className = 'feedback-box wrong';
-                fb.innerHTML = '<p>❌ <strong>Not quite.</strong></p><p>' + step.feedback_wrong + '</p>';
-                addXP(5); // participation XP
-            }
-
-            const btn = document.getElementById('btn-next-quiz');
-            btn.classList.add('visible');
-            btn.textContent = currentStep < STEPS.length - 1 ? 'Next →' : 'Finish 🏆';
-        }
-
-        function nextStep() {
-            currentStep++;
-            if (currentStep >= STEPS.length) {
-                showDone();
-            } else {
-                renderStep();
-            }
-        }
-
-        // ═══════════════════════════════════════════════
-        //  START / DONE / RESTART
-        // ═══════════════════════════════════════════════
-        function startLearn() {
-            document.getElementById('splash').classList.remove('active');
-            document.getElementById('lesson-screen').classList.add('active');
-            renderStep();
-        }
-
-        function showDone() {
-            document.getElementById('lesson-screen').classList.remove('active');
-            const done = document.getElementById('done-screen');
-            done.classList.add('active');
-            document.getElementById('final-xp').textContent = xp;
-            document.getElementById('final-correct').textContent = answeredCorrectly + ' / ' + totalQuestions;
-            document.getElementById('final-streak').textContent = bestStreak;
-            document.getElementById('final-level').textContent = level;
-            const pct = Math.round((answeredCorrectly / totalQuestions) * 100);
-            document.getElementById('mastery-pct').textContent = pct + '%';
-            setTimeout(() => { document.getElementById('mastery-fill').style.width = pct + '%'; }, 300);
-        }
-
-        function restart() {
-            xp = 0; level = 1; streak = 0; bestStreak = 0; correctCount = 0;
-            totalQuestions = 0; answeredCorrectly = 0; currentStep = 0;
-            document.getElementById('done-screen').classList.remove('active');
-            document.getElementById('splash').classList.add('active');
-            updateHUD();
-        }
-
-        // init HUD
         updateHUD();
-    </script>
-</body>
+        const lessonWrap = document.querySelector(".lesson-wrap");
+        if (lessonWrap) {
+          const y =
+            lessonWrap.getBoundingClientRect().top + window.scrollY - 100;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
 
+      function answerQuiz(chosen, correct, xpAmount) {
+        if (questionAnswered) return;
+        questionAnswered = true;
+
+        const opts = document.querySelectorAll(".opt");
+        opts.forEach((o) => (o.disabled = true));
+        opts[chosen].classList.add(chosen === correct ? "correct" : "wrong");
+        opts[correct].classList.add("correct");
+
+        const step = STEPS[currentStep];
+        const fb = document.getElementById("feedback");
+        fb.style.display = "block";
+
+        if (chosen === correct) {
+          correctCount++;
+          answeredCorrectly++;
+          streak++;
+          if (streak > bestStreak) bestStreak = streak;
+          fb.className = "feedback-box correct";
+          fb.innerHTML =
+            "<p>✅ <strong>" +
+            (streak > 1 ? "🔥 " + streak + " streak! " : "") +
+            "Correct!</strong></p><p>" +
+            step.feedback_correct +
+            "</p>";
+          addXP(xpAmount + (streak >= 3 ? 5 : 0)); // streak bonus
+        } else {
+          streak = 0;
+          fb.className = "feedback-box wrong";
+          fb.innerHTML =
+            "<p>❌ <strong>Not quite.</strong></p><p>" +
+            step.feedback_wrong +
+            "</p>";
+          addXP(5); // participation XP
+        }
+
+        const btn = document.getElementById("btn-next-quiz");
+        btn.classList.add("visible");
+        btn.textContent =
+          currentStep < STEPS.length - 1 ? "Next →" : "Finish 🏆";
+      }
+
+      function nextStep() {
+        currentStep++;
+        if (currentStep >= STEPS.length) {
+          showDone();
+        } else {
+          renderStep();
+        }
+      }
+
+      // ═══════════════════════════════════════════════
+      //  START / DONE / RESTART
+      // ═══════════════════════════════════════════════
+      function startLearn() {
+        document.getElementById("splash").classList.remove("active");
+        document.getElementById("lesson-screen").classList.add("active");
+        renderStep();
+      }
+
+      function showDone() {
+        document.getElementById("lesson-screen").classList.remove("active");
+        const done = document.getElementById("done-screen");
+        done.classList.add("active");
+        document.getElementById("final-xp").textContent = xp;
+        document.getElementById("final-correct").textContent =
+          answeredCorrectly + " / " + totalQuestions;
+        document.getElementById("final-streak").textContent = bestStreak;
+        document.getElementById("final-level").textContent = level;
+        const pct = Math.round((answeredCorrectly / totalQuestions) * 100);
+        document.getElementById("mastery-pct").textContent = pct + "%";
+        setTimeout(() => {
+          document.getElementById("mastery-fill").style.width = pct + "%";
+        }, 300);
+      }
+
+      function restart() {
+        xp = 0;
+        level = 1;
+        streak = 0;
+        bestStreak = 0;
+        correctCount = 0;
+        totalQuestions = 0;
+        answeredCorrectly = 0;
+        currentStep = 0;
+        document.getElementById("done-screen").classList.remove("active");
+        document.getElementById("splash").classList.add("active");
+        updateHUD();
+      }
+
+      // init HUD
+      updateHUD();
+    </script>
+  </body>
 </html>
