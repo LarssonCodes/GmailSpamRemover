@@ -208,7 +208,7 @@ with st.sidebar:
     elif st.session_state.auth_url:
         # Step 2 — user is about to go to Google or has a code
         st.success("Authorization URL Generated")
-        st.markdown(f'<a href="{st.session_state.auth_url}" target="_blank" style="display: inline-block; padding: 0.5rem 1rem; background-color: #4285F4; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Click here to Sign in with Google</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{st.session_state.auth_url}" target="_self" style="display: inline-block; padding: 0.5rem 1rem; background-color: #4285F4; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Click here to Sign in with Google</a>', unsafe_allow_html=True)
         st.info("A new tab will open. After authorizing, Google will provide a code.")
         
         with st.expander("Debug Login URL"):
