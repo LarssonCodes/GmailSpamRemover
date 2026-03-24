@@ -67,6 +67,7 @@ class GmailService:
         client_config = _get_client_config()
         redirect_uri = _get_redirect_uri()
         flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
+        flow.autogenerate_code_verifier = True
         auth_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true',
@@ -74,16 +75,31 @@ class GmailService:
         )
         st.session_state['oauth_client_config'] = client_config
         st.session_state['oauth_state'] = state
+        
+        # Save state and code_verifier to a local file to survive Streamlit session wipe
         if hasattr(flow, 'code_verifier'):
             st.session_state['oauth_code_verifier'] = flow.code_verifier
+            try:
+                state_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'oauth_states.json')
+                states = {}
+                if os.path.exists(state_file):
+                    with open(state_file, 'r') as f:
+                        states = json.load(f)
+                states[state] = flow.code_verifier
+                with open(state_file, 'w') as f:
+                    json.dump(states, f)
+            except Exception as e:
+                print(f"DEBUG: Failed to save oauth_state: {e}")
+                
         return auth_url
 
     @staticmethod
-    def exchange_code(code: str):
+    def exchange_code(code: str, state_param: str = None):
         """Exchange the auth code (from query params) for credentials."""
         client_config = st.session_state.get('oauth_client_config') or _get_client_config()
         redirect_uri = _get_redirect_uri()
-        state = st.session_state.get('oauth_state')
+        
+        state = st.session_state.get('oauth_state') or state_param
         
         flow = Flow.from_client_config(
             client_config, 
@@ -95,6 +111,16 @@ class GmailService:
         # Restore PKCE code if it was used
         if 'oauth_code_verifier' in st.session_state:
             flow.code_verifier = st.session_state['oauth_code_verifier']
+        elif state_param:
+            try:
+                state_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'oauth_states.json')
+                if os.path.exists(state_file):
+                    with open(state_file, 'r') as f:
+                        states = json.load(f)
+                    if state_param in states:
+                        flow.code_verifier = states[state_param]
+            except Exception as e:
+                print(f"DEBUG: Failed to load oauth_state from file: {e}")
             
         flow.fetch_token(code=code)
         return flow.credentials

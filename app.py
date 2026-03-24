@@ -70,9 +70,10 @@ if 'auth_url' not in st.session_state:
 _params = st.query_params
 if "code" in _params and not st.session_state.authenticated:
     _code = _params["code"]
+    _state = _params.get("state")
     try:
         with st.spinner("Completing sign-in…"):
-            _creds = GmailService.exchange_code(_code)
+            _creds = GmailService.exchange_code(_code, state_param=_state)
             _email = GmailService.get_service_email(_creds)
             if _email:
                 st.session_state.gmail_service = GmailService(_creds)
