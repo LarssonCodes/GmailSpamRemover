@@ -67,6 +67,7 @@ class GmailService:
         client_config = _get_client_config()
         redirect_uri = _get_redirect_uri()
         flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
+        flow.autogenerate_code_verifier = True
         auth_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true',
