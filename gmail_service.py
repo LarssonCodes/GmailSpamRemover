@@ -67,12 +67,15 @@ class GmailService:
         client_config = _get_client_config()
         redirect_uri = _get_redirect_uri()
         flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
-        auth_url, _ = flow.authorization_url(
+        auth_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true',
             prompt='select_account',
         )
         st.session_state['oauth_client_config'] = client_config
+        st.session_state['oauth_state'] = state
+        if hasattr(flow, 'code_verifier'):
+            st.session_state['oauth_code_verifier'] = flow.code_verifier
         return auth_url
 
     @staticmethod
@@ -80,7 +83,19 @@ class GmailService:
         """Exchange the auth code (from query params) for credentials."""
         client_config = st.session_state.get('oauth_client_config') or _get_client_config()
         redirect_uri = _get_redirect_uri()
-        flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
+        state = st.session_state.get('oauth_state')
+        
+        flow = Flow.from_client_config(
+            client_config, 
+            scopes=SCOPES, 
+            redirect_uri=redirect_uri,
+            state=state
+        )
+        
+        # Restore PKCE code if it was used
+        if 'oauth_code_verifier' in st.session_state:
+            flow.code_verifier = st.session_state['oauth_code_verifier']
+            
         flow.fetch_token(code=code)
         return flow.credentials
 
