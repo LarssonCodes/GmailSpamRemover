@@ -1,0 +1,402 @@
+II SEMESTER PROJECT REPORT ON
+“HR ANALYTICS USING TABLEAU”
+Submitted in partial fulfillment of the requirements for the award of the degree of
+MASTER OF SCIENCE IN DATA SCIENCE
+During the Academic Year 2025 - 2026
+Submitted By
+Samson Raja S22MCAA59
+Under the guidance of
+Internal Guide
+Dr. Ayshwarya
+Assistant Professor
+                                     Kristu Jayanti Institute of Technology,
+                                                                 Kristu Jayanti University
+KRISTU JAYANTI INSTITUTE OF TECHNOLOGY KRISTU JAYANTI UNIVERSITY
+K. Narayanapura, Kothanur P.O., Bengaluru – 560077
+Certificate
+This is to certify that the project entitled “HR Analytics using Tableau” has been satisfactorily completed by SAMSON RAJA S, 22MCAA59 in partial fulfillment of the requirements of II Semester M.Sc.(Data science) Programme prescribed by Kristu Jayanti University during the academic year 2023-24.
+Internal GuideHead of the Department
+Valued by Examiners
+1:                                            Centre: Kristu Jayanti University
+2:Date:
+First of all, I would like to thank the God Almighty for all the blessings he has showered on us. Our spiritual quotient gave us more strength and motivation that helped immensely.
+I would like to thank Rev. Dr. Augustine George, our Vice Chancellor, for providing us his constant guidance and support. I would also like to thank Rev. Fr. Lijo P Thomas, our ProVice Chancellor, for providing us with the best facilities.
+I am extremely thankful to our Head of the Department Dr. Muruganantham A for his enormous guidance and motivation and also giving us the essential support in the form of allocating comfortable lab hours and necessary resources.
+I would like to extend our heartfelt thanks to Dr.Ayshwarya B, our project guide for providing us the necessary details related to project development and process identification enabling us to finish the project within the stipulated time.
+I thank all other faculty members who helped us a lot in completing this project. The computer lab was always open for us. We thank the lab administrator and other technical staff for their help and support.
+I thank our class mates, who have pointed out errors and guided us a lot and we thank each and every one who has helped us.
+The HR Analytics project's main goal is to transform unprocessed HR data into understandable and useful insights by utilizing Tableau's robust data visualization capabilities. To provide a cohesive and thorough perspective of HR metrics, this entails gathering and combining data from several sources, like as attendance records, personnel databases, and performance management systems. The project's main goal is to provide interactive dashboards that make it simple for HR professionals to study and evaluate data. Numerous visualizations, including bar charts, line graphs, scatter plots, heat maps, and pie charts, are included in these dashboards; each is designed to answer particular HR queries and goals. The project has shown how well Tableau can convert intricate HR data into clear insights, enabling more efficient HR administration. The creation of interactive dashboards was one of the Tableau project's highlights.
+These extensive dashboards combined many visualizations to present the data in an all-encompassing manner. They made it possible for users to work with the data, apply filters, and delve into particulars. The data could be explored more deeply thanks to its interaction. It thereby made decision-making more informed possible. The interactive dashboards that have been created will be an essential resource for NetAmbit Consultancy Services, promoting improved HR tactics and enhancing the success of the company as a whole. The study also highlights the significance of data-driven decision-making in HR with the goal of improving worker productivity and employee engagement. This project not only helps with ongoing HR operations but also establishes the foundation for upcoming analytical projects inside the company.
+This interaction promoted better decision-making and demonstrated Tableau's ability to strengthen data- driven initiatives and increase the effectiveness of HR management as a whole.
+S. No
+Topic
+Page No
+1.
+1.1
+1.2
+1.3
+2
+3
+4
+4.1
+4.2
+5
+5.1
+5.2
+6
+7
+7.1
+7.2
+8
+8.1
+8.2
+8.3
+9
+10
+11
+12
+12.1
+Introduction
+Problem Definition
+Problem Description Review of Literature
+Module Diagram Feasible Study
+Existing System Proposed System
+System Configuration
+Hardware Configuration Software Configuration
+Overview of Tools & Package System Design
+System Definition 
+Data Collection
+Data Set Features
+Algorithms Used Formulated Hypothesis Analysis & Results
+Discussion
+Conclusion & Future Enhancement Conclusion
+Future Scope References
+INTRODUCTION
+INTRODUCTION
+Problem Definition
+The requirement to convert the enormous and complicated raw HR data into useful insights would be the project's definition of problem. Effectively managing and analysing data from many sources, including attendance records, performance management systems, and personnel databases, presented issues for the organisation. HR practitioners found it challenging to spot patterns, come to wise conclusions, and create strategic HR initiatives due to the lack of integrated data. Through the creation of interactive dashboards, the initiative seeks to address these problems by utilising Tableau's potent data visualization capabilities. The data will be streamlined and unified by these dashboards, giving HR professionals easy-to-use tools for exploring, analysing, and deriving valuable insights that will eventually improve strategic decision-making and human resource management.
+Problem Description
+Leading financial services provider NetAmbit Consultancy Services oversees a sizable team spread across multiple divisions. The company has a lot of HR data available to it from many sources, including attendance records, performance management systems, and personnel databases, but it has a hard time making this data understandable and useful. HR professionals find it challenging to derive significant insights and facilitate data-driven decision-making due to the fragmented and inconsistent nature of raw data, despite its inherent value.
+The absence of a cohesive perspective on HR metrics is one of the main problems. HR professionals find it difficult to spot important trends and patterns linked to hiring, performance, employee engagement, and staff churn without a centralised platform to integrate and visualise data. This disjointed approach makes it more difficult to execute thorough assessments, which results in HR policies that aren't as effective as they may be and possibly misses opportunities to boost organisational performance and employee happiness.
+Furthermore, the difficulty is increased by the raw data's intricacy. Since HR data is frequently unorganised, it must first be thoroughly cleaned and prepared before analysis can begin. To guarantee data consistency and correctness, this procedure takes a long time and a lot of work. When data preparation and integration procedures are not optimised, important insights become lost in the data and are not available to the people who need them most.
+Through the use of Tableau's robust data visualization features, the HR Analytics project seeks to overcome these obstacles. The initiative aims to convert unprocessed HR data into understandable and useful insights by combining information from several sources into a single, interactive dashboard. A range of visual aids, including heat maps, pie charts, scatter plots, bar charts and line graphs, will be included in the dashboards to help with certain HR goals and queries. The user experience will be improved by interactive features like drill- downs, tooltips, and filters, which will let HR professionals examine data easily and come to wise judgements.
+REVIEW OF LITERATURE
+REVIEW OF LITERATURE
+McKinsey & Company, 2020:
+According to a McKinsey & Company report, HR analytics is crucial for improving organisational performance. It emphasises how HR Analytics may help HR strategies match corporate objectives, increasing overall efficacy. Organisations may maximise worker performance by identifying areas for improvement and making well-informed decisions by utilising data-driven insights. According to McKinsey's research, HR analytics is strategically critical for fostering continuous improvement and attaining long-term corporate success. The need of incorporating HR Analytics into organisational decision-making processes is emphasised by this viewpoint.
+Journal of Applied Psychology, 2019
+The study published in the Journal of Applied Psychology highlights the difficulties that arise while implementing HR Analytics projects, especially with regard to data integration, quality, and privacy. It emphasises how crucial data consistency and correctness are to the accomplishment of successful HR Analytics projects. The paper recommends strong data governance structures as a viable means of addressing these issues. Maintaining data integrity is essential for obtaining trustworthy insights and choosing wisely when it comes to HR management. This study emphasises how important it is to have governance and data quality at the top of HR Analytics projects.
+Journal of Business and Psychology, 2018
+The Journal of Business and Psychology study emphasises how important HR Analytics is for supporting data-driven decision-making. It highlights how businesses who use HR data efficiently get a tactical edge when dealing with talent management issues. These companies may create organisational success and accomplish strategic goals by utilising HR Analytics to help them make well-informed decisions. The study emphasises how data-driven techniques can significantly improve organisational performance and talent management tactics. It emphasises how crucial it is to use HR Analytics in decision-making procedures in order to achieve long-term success.
+International Journal of Human Resource Management, 2021
+The use of employee data, algorithm bias, data privacy, and other ethical conundrums in HR Analytics initiatives are covered in the International Journal of Human Resource Management. These conundrums show how important it is for businesses to take ethics into account when using data analytics. Problems like algorithmic bias can result in unfair decisions and treatment, which calls for openness and ethical standards. Data privacy issues highlight how crucial it is to safeguard confidential employee information and follow data laws. In HR Analytics projects, maintaining trust and upholding ethical standards depends on the responsible use of employee data.
+PwC, 2021
+The International Journal of Human Resource Management addresses algorithm bias, data privacy, and employee data usage as ethical conundrums in HR Analytics initiatives. These conundrums show how important it is for businesses to incorporate ethical issues into their data analytics procedures. Transparency and ethical standards are required since problems like bias in algorithms might result in unjust treatment and decisions. Concerns over data privacy highlight how crucial it is to safeguard confidential employee information and adhere to data regulations. Maintaining trust and ethical standards in HR Analytics efforts requires the responsible use of employee data.
+SIOP, 2021
+The ethical implications of HR analytics have been thoroughly discussed by the Society for Industrial and Organisational Psychology (SIOP). The publications published by SIOP emphasise the ethical use of data, highlighting the necessity of privacy protection and openness in HR Analytics projects. In order to preserve integrity and confidence in HR data analytics, the community promotes ethical data practices. Ensuring equity, refraining from discrimination, and defending the privacy rights of employees are all ethical considerations. The ethical necessity of using HR data responsibly to support well-informed decision-making is highlighted by SIOP's findings.
+MODULE DIAGRAM
+MODULE DIAGRAM
+A module diagram visualizes the hierarchical organization and relationships between modules or components within a system. It serves as a blueprint during the design phase, depicting the modular decomposition of functionality and interface specifications. Module diagrams help developers, architects, and stakeholders comprehend the system's structure and make informed decisions on module integration and interfaces. They provide a high-level overview, facilitating better management of system complexity and enhancing software maintainability. They showcase the modularity, cohesion, and coupling of system components, promoting scalability and reusability. Overall, module diagrams play a pivotal role in structuring and organizing software systems for efficient development and maintenance.
+Fig 3.1
+FEASIBLE STUDY
+FEASIBLE STUDY
+Existing System Microsoft Power BI:
+Power BI is a business analytics tool that offers interactive visualizations and business intelligence capabilities.
+It allows users to connect to various data sources, create data models, and generate interactive reports and dashboards.
+QlikView and Qlik Sense:
+QlikView and Qlik Sense are data visualization and business intelligence platforms that enable data discovery, analysis, and reporting.
+They offer intuitive drag-and-drop interfaces, data integration capabilities, and interactive visualization features.
+Google Data Studio:
+Google Data Studio is a free tool for creating customizable and interactive dashboards and reports.
+It integrates with various data sources, allows collaboration, and provides real-time data visualization.
+IBM Cognos Analytics:
+IBM Cognos Analytics is a business intelligence and analytics platform that offers self-service reporting, dashboards, and data visualization.
+It supports data integration, advanced analytics, and predictive modeling capabilities.
+SAP Analytics Cloud:
+SAP Analytics Cloud is a cloud-based analytics platform that combines business intelligence, planning, and predictive analytics functionalities.
+It provides interactive visualizations, data connectivity, and collaborative features for analyzing and sharing insights.
+Proposed System
+Tableau's power in HR analytics comes from its user-friendly interface, which makes it easy for people with varying levels of technical expertise to create interactive visualizations. The platform's strong data integration features make it easier to combine HR data from many sources, guaranteeing a comprehensive perspective for in-depth analysis. Tableau improves data representation by offering a wide range of customization choices and visualization options that allow insights to be tailored to certain HR KPIs and goals. With the use of intricate computations and predictive modelling, its sophisticated analytics tools enable customers to gain deeper insights. Because of Tableau's scalability, large data volumes and concurrent user access may be handled with ease while still achieving peak performance. High responsiveness is ensured by Tableau by utilizing in-memory processing technologies, especially with complex data sets and dynamic dashboards.
+HR professionals are encouraged to collaborate and share expertise by means of collaboration tools and a vibrant user community. The platform's easy integration and access to data across databases, cloud platforms, and spreadsheets enhances its analytical capabilities. Tableau is a vital tool for facilitating strategic objectives, well-informed HR choices, and actionable insights in HR Analytics projects because of its unique combination of intuitive design, sophisticated analytics, scalability, and community support.
+SYSTEM CONFIGURATION
+SYSTEM CONFIGURATION
+Hardware Configuration
+PROCESSOR
+1.70 GHz or faster processor
+RAM
+16 GB
+HARD DISK
+5400 RPM hard disk drive
+STORAGE
+SSD or HDD
+Software Configuration
+OPERATING SYSTEM
+Windows or macOS
+SOFTWARE
+Tableau Desktop
+DBMS
+MySQL, Oracle or Microsoft SQL
+DOCUMENTATION TOOL
+Microsoft Word 2021
+OVERVIEW OF TOOLS & PACKAGE
+OVERVIEW OF TOOLS & PACKAGE
+A variety of tools, packages, and platforms can be used in conjunction with Tableau for HR Analytics projects in order to improve data processing, analysis, visualization, and teamwork. Here is an extensive list:
+Tableau Desktop:
+Tableau Desktop is a powerful data visualization and analytics software that empowers users to create interactive and insightful visualizations from complex datasets. It offers a user- friendly interface with drag-and-drop functionality, allowing users to easily connect to various data sources, including databases, spreadsheets, and cloud services. Tableau Desktop supports a wide range of visualizations, including bar charts, line graphs, scatter plots, heat maps, and more, enabling users to present data in a visually compelling and meaningful way.
+One of Tableau Desktop's key strengths is its ability to handle large volumes of data and perform complex calculations and analyses in real-time. Users can create calculated fields, apply filters, and customize views to delve deeper into their data and uncover actionable insights. The software also provides advanced analytics capabilities, such as predictive modeling and trend analysis, to help users forecast future trends and make data-driven decisions.
+Tableau Server or Tableau Online:
+Tableau Server and Tableau Online are both powerful platforms for sharing and collaborating on Tableau visualizations within an organization. Tableau Server is an on-premises solution that allows organizations to host Tableau workbooks, dashboards, and data sources on their own servers. It provides centralized data governance, security, and scalability, making it ideal for large enterprises with strict data management requirements. Users can access Tableau Server through a web browser or Tableau Desktop, enabling them to interact with and explore data visualizations securely.
+On the other hand, Tableau Online is a cloud-based platform that offers similar functionality to Tableau Server but is hosted and managed by Tableau in the cloud. Tableau Online provides the flexibility of accessing Tableau visualizations from anywhere with an internet connection,
+making it suitable for distributed teams and organizations looking for a scalable and hassle- free deployment option.
+Tableau Prep Builder:
+Tableau Prep Builder is a data preparation tool designed to streamline and simplify the process of cleaning, shaping, and combining data for analysis in Tableau Desktop or other analytics platforms. It offers a visual and interactive interface that allows users to visually explore, manipulate, and transform data without writing complex code or scripts. With Tableau Prep Builder, users can connect to multiple data sources, such as databases, files, and cloud services, and perform a wide range of data cleaning and transformation tasks.
+The key features of Tableau Prep Builder include data profiling, which helps users understand the structure and quality of their data, and smart data cleaning capabilities, such as data deduplication, data pivoting, and data splitting. Users can easily create calculated fields, apply filters, and perform data joins to combine disparate datasets into a single unified view. Tableau Prep Builder also provides a preview of data transformations, allowing users to see the impact of their actions on the data before applying them.
+Database Management Systems (DBMS):
+Database Management Systems (DBMS) are sophisticated software tools designed to efficiently handle vast amounts of data. They serve as a centralized repository for organizing, storing, retrieving, and manipulating data in various formats. DBMS systems offer a structured approach to data management, using tables, rows, and columns to organize information logically. One of the key advantages of DBMS is its ability to enforce data integrity by implementing rules and constraints to maintain data accuracy and consistency. Additionally, DBMS systems provide robust security features to protect sensitive data from unauthorized access and ensure data confidentiality.
+They support powerful querying languages like SQL, enabling users to perform complex data queries, join multiple datasets, and generate reports. Scalability and performance optimization are also inherent features of DBMS, allowing systems to handle increasing data volumes and user loads efficiently.
+Advanced Analytics Tools:
+Advanced analytics tools encompass a range of sophisticated software solutions designed to extract valuable insights and predictions from complex datasets. These tools leverage advanced statistical techniques, machine learning algorithms, and predictive modeling to uncover hidden patterns, trends, and correlations within data. By going beyond basic reporting and descriptive analytics, advanced analytics tools enable organizations to gain a deeper understanding of their data, make data-driven decisions, and drive business growth.
+Key features of advanced analytics tools include predictive modeling capabilities, which allow users to forecast future trends and outcomes based on historical data. Machine learning algorithms play a significant role in automating data analysis processes and extracting actionable insights without the need for explicit programming. Data mining techniques are utilized to discover meaningful relationships and patterns in large datasets, supporting decision-making processes across various domains.
+Data Preparation and Cleaning Tools:
+Data preparation and cleaning tools are indispensable assets in the data analytics toolkit, essential for transforming raw data into actionable insights. These tools automate the process of cleansing, organizing, and structuring data, ensuring its accuracy, completeness, and consistency. By addressing common data quality issues such as missing values, duplicates, inconsistencies, and formatting errors, data preparation tools lay a solid foundation for effective analysis and decision-making.
+Key functionalities of data preparation and cleaning tools include data profiling to understand data structure and quality, data cleansing to correct errors and inconsistencies, and data transformation to standardize formats and create calculated fields. Additionally, these tools facilitate data integration from multiple sources, enabling users to work with unified datasets for comprehensive analysis. They also offer features for data quality monitoring, automation, and workflow management, enhancing efficiency and collaboration within analytics teams.
+Collaboration Platforms:
+Collaboration platforms are digital tools designed to facilitate communication, coordination, and teamwork among individuals and teams within an organization. These platforms offer a
+centralized hub where employees can collaborate on projects, share information, exchange ideas, and work together seamlessly, regardless of geographical locations. Key features of collaboration platforms include real-time messaging and chat functionalities, document sharing and version control, task management and project tracking, and virtual meeting and video conferencing capabilities.
+Collaboration platforms promote transparency, efficiency, and productivity by enabling teams to collaborate in a structured and organized manner. They facilitate knowledge sharing, reduce communication barriers, and foster a culture of collaboration and innovation within the organization. Additionally, collaboration platforms often integrate with other business tools and applications, such as email, calendars, and project management software, to provide a unified and cohesive work environment.
+Cloud Platforms:
+Cloud platforms are robust and scalable computing environments that deliver a wide range of services and resources over the internet. These platforms enable organizations to access and utilize computing power, storage, databases, networking, and software applications on- demand, without the need for on-premises infrastructure. Cloud platforms offer flexibility, agility, and cost-effectiveness, allowing businesses to scale resources up or down based on demand, pay only for what they use, and avoid upfront hardware and maintenance costs.
+Backup and Recovery Tools:
+Backup and recovery tools are essential components of data management strategies, designed to protect and restore data in case of data loss, corruption, or system failures. These tools automate the process of creating backups of critical data, ensuring that organizations have a reliable copy of their information that can be restored in the event of unforeseen incidents. Backup solutions offer various features such as scheduling regular backups, incremental backups to save storage space, and encryption to secure backup data. Recovery tools, on the other hand, provide mechanisms to restore data from backups quickly and efficiently, minimizing downtime and data loss.
+These tools often include options for full system recovery, file-level recovery, and disaster recovery plans to ensure business continuity in case of emergencies. Overall, backup and
+recovery tools are crucial for data protection, resilience, and continuity, allowing organizations to safeguard their valuable data assets and maintain operations even in challenging circumstances.
+Data Governance and Compliance Tools:
+Data governance and compliance tools are critical components of modern data management strategies, aimed at ensuring data integrity, security, and regulatory adherence. These tools provide organizations with the means to establish policies, procedures, and controls to manage data effectively throughout its lifecycle. Key functionalities of data governance tools include data cataloging, metadata management, data lineage tracking, and data quality monitoring. These tools enable organizations to create a centralized repository of data assets, establish data ownership, enforce data standards, and maintain data lineage for auditability and traceability.
+Compliance tools, on the other hand, focus on regulatory compliance requirements such as GDPR, HIPAA, SOX, and other industry-specific regulations.
+SYSTEM DESIGN
+SYSTEM DESIGN
+System Definition
+Data Sources
+Employee Databases: Contains data on employee demographics, job roles, tenure, and historical records.
+Performance Management Systems: Stores performance metrics, KPIs, reviews, feedback, and goal achievements.
+Attendance Records: Tracks employee attendance, leave balances, time-off requests, and scheduling information.
+Data Integration and Preparation
+Data Extraction: Automated scripts or ETL (Extract, Transform, Load) tools extract data from various sources.
+Data Cleaning: Data preparation tools (e.g., Tableau Prep Builder) clean and format data to ensure accuracy and consistency.
+Data Storage
+Database Management Systems (DBMS): Centralized storage of integrated HR data in databases such as Microsoft SQL Server, Oracle, MySQL, or PostgreSQL.
+Data Warehousing: Optionally, use data warehousing solutions for large-scale data storage and efficient querying.
+Data Analysis and Visualization
+Tableau Desktop: The primary tool for creating interactive visualizations, dashboards, and performing data analysis.
+Tableau Server/Tableau Online: Platforms for publishing and sharing dashboards, facilitating collaboration and secure data access.
+Advanced Analytics
+R/Python Integration: Leveraging advanced analytics and predictive modeling capabilities through integration with R or Python scripts.
+Statistical Analysis: Performing complex statistical analyses and generating insights for predictive and prescriptive analytics.
+User Interface
+Interactive Dashboards: Customizable and interactive dashboards in Tableau with filters, drill-downs, and tooltips for detailed data exploration.
+Reports and Visualizations: A variety of visualizations including bar charts, line graphs, scatter plots, heat maps, and pie charts to represent HR metrics effectively.
+Collaboration and Sharing
+Tableau Server/Tableau Online: Enables sharing of dashboards and visualizations with stakeholders, allowing for real-time collaboration and feedback.
+Collaboration Tools: Integration with platforms like Microsoft Teams, Slack, or SharePoint for enhanced communication and project management.
+Security and Governance
+Access Control: Role-based access controls to ensure secure data access and protect sensitive HR information.
+Data Encryption: SSL/TLS encryption for secure data transmission and communication. Data Governance: Implementation of data governance policies to ensure data quality, integrity, and compliance with regulations.
+Backup and Recovery
+Regular Backups: Scheduled backups of Tableau workbooks, data extracts, and server configurations to prevent data loss.
+Disaster Recovery: Plans and tools to ensure business continuity and quick recovery in case of system failures or data breaches.
+Architectural Diagram
+An architectural diagram gives a high-level perspective of how various parts are arranged and communicate by graphically representing the structure, elements, and relationships within a system. Stakeholders benefit from it in terms of understanding the system’s architecture, efficient communication, and implementation guidance. The diagram shows the data flow from HR databases to Tableau for analysis and visualization in a Tableau-based HR Analytics project. This illustration focuses on the instruments, procedures, and collaborations needed to convert unprocessed data into useful insights.
+Fig 7.2.1
+DATA COLLECTION
+DATA COLLECTION
+Data Set
+A large dataset is necessary for any Tableau-based HR Analytics project. It contains comprehensive personnel data (such as IDs, job titles, departments, and wages), attendance records (such as clock-in and clock-out times, hours worked), and performance information (such as review dates, goals fulfilled, and scores). It also keeps track of training attendance, staff attrition (including dates and reasons for termination), and specifics about pay and benefits. HR experts may create interactive dashboards in Tableau with this structured dataset, which offers useful insights.
+Fig 8.1.1
+Fig 8.1.2
+Features
+Data Integration
+Combines data from multiple sources, such as employee databases, performance management systems, and attendance records, into a unified view.
+Data Preparation and Cleaning:
+Utilizes ETL tools and Tableau Prep Builder for data extraction, transformation, and loading, ensuring data accuracy and consistency.
+Interactive Dashboards
+Creates dynamic and interactive dashboards with various visualizations like bar charts, line graphs, scatter plots, heat maps, and pie charts.
+Advanced Analytics
+Supports advanced analytics and predictive modeling through integration with R and Python for sophisticated data analysis.
+User-Friendly Interface
+Provides an intuitive and easy-to-use interface for HR professionals to explore and analyze data effortlessly.
+Customization and Filtering
+Allows users to customize dashboards, apply filters, and drill down into specific details to gain deeper insights.
+Real-Time Data Updates
+Offers real-time data updates and live connections to ensure the most current information is available for decision-making.
+Collaboration and Sharing
+Facilitates collaboration by enabling the sharing of dashboards and reports via Tableau Server or Tableau Online.
+Security and Governance
+Implements robust security measures, including role-based access controls, data encryption, and governance policies to protect sensitive HR data.
+Scalability
+Scales efficiently to handle large volumes of data and numerous users, supporting the growing needs of an organization.
+Algorithms Used
+Descriptive Analytics
+Summary Statistics:
+Mean, median, mode, standard deviation, and other statistical measures to summarize and understand the data.
+Data Aggregation:
+Grouping data by categories such as department, job role, or time period to compute aggregate metrics like total headcount, average salary, or turnover rate.
+Diagnostic Analytics
+Correlation Analysis:
+Identifying relationships between different variables, such as the correlation between employee satisfaction scores and performance ratings.
+Cluster Analysis:
+Using clustering algorithms (e.g., K-means) to group employees into clusters based on similar characteristics, such as job role, performance scores, or training needs.
+Predictive Analytics
+Regression Analysis:
+Linear and logistic regression to predict outcomes such as employee turnover likelihood based on various factors like job satisfaction, salary, and tenure.
+Decision Trees:
+Building decision tree models to classify employees based on characteristics and predict outcomes like promotions or resignations.
+Time Series Analysis:
+Analyzing time-dependent data such as absenteeism or turnover rates over time to identify trends and seasonality.
+Survival Analysis:
+Assessing the time until an event occurs, such as employee turnover, and identifying factors that influence employee retention.
+Prescriptive Analytics
+Optimization Models:
+Implementing optimization algorithms to allocate resources effectively, such as workforce scheduling or budget allocation for training programs.
+Text Analytics
+Sentiment Analysis:
+Analyzing text data from employee feedback, surveys, or performance reviews to gauge sentiment and identify common themes or concerns.
+Integration with Advanced Analytics Tools
+Python/R Integration:
+Utilizing Python or R scripts within Tableau for advanced analytics. This includes libraries such as Scikit-learn, TensorFlow, or caret for implementing machine learning models.
+SQL for Data Manipulation:
+Using SQL queries to perform complex data manipulations and aggregations before visualizing the results in Tableau.
+FORMULATED HYPOTHESIS
+FORMULATED HYPOTHESIS
+Developing testable statements based on your data and project goals is a necessary step in developing hypotheses for HR Analytics projects. The following are some theories that might be investigated in a Tableau-based HR Analytics project:
+Performance and Productivity
+H0: Employees who receive regular performance feedback show higher performance scores compared to those who do not receive regular feedback.
+H1: Higher engagement levels are positively correlated with higher productivity and performance ratings.
+Hypothesis on Training and Development
+H0: Employees who participate in more professional development programs have higher performance  scores than those who do not participate.
+H1: The frequency of training is positively correlated with employee retention rates.
+Hypothesis on Work-Life Balance
+H0: Employees who rate their work-life balance highly have better performance metrics and lower stress levels.
+H1: Work-from-home policies lead to higher employee satisfaction and lower turnover rates.
+ANALYSIS & RESULTS
+ANALYSIS & RESULTS
+This chapter shows how HR decision-making processes were supported by the actionable insights found through the use of Tableau's data visualization capabilities. Pie charts, bar charts, and scatter plots were among the many visualizations produced by combining and evaluating data from several sources. Important patterns and correlations, such as the one between performance and work happiness, were made easier to see with the use of these visualizations. Prescriptive analytics offered practical suggestions, while predictive models were used to predict trends such as staff attrition. Real-time data exploration was made possible by interactive dashboards, which improved HR professionals' capacity for data-driven decision- making.
+Sheet Description
+A Tableau sheet description offers a summary of the main features of a certain sheet (or view) in a workbook, along with numerous important sections. The information or understanding the sheet offers is indicated in the Title. The purpose of the sheet is briefly explained in the Purpose, along with its intended analysis or display. The fields and metrics that are visualised in the data, as well as the data source, are all described. The various chart and graph types—such as bar, pie, line, and scatter plots—are described in visualisations. The sheet's main conclusions or insights are highlighted in the Key Insights section. Lastly, any filters, parameters, or interactive elements that let users work with the data display are described in Filters and Interactive Elements.
+Fig 10.1.1
+Layouts & Filters
+The arrangement and filters in Tableau are essential for establishing a user interface that is both interactive and intuitive. The arrangement of visual components on a dashboard or sheet is referred to as the layout, and it guarantees that information is displayed in a way that is understandable, rational, and aesthetically pleasing.
+Fig 10.2.1
+Fig 10.2.2
+Descriptive Analytics
+The fundamental characteristics of the data were compiled and comprehended through the use of descriptive analytics. Pie charts and bar charts were used to visualize personnel demographics, including department, job title, age, and gender. Attendance and absence trends across departments were examined using line graphs and heat maps.
+SUM
+SUM([Numeric Field])
+Calculates the sum of numerical values in a dataset.
+AVERAGE
+AVG([Numeric Field])
+Computes the average or mean value of a set of numerical data.
+Percentile Functions
+PERCENTILE([Numeric Field], 0.25)
+Calculates the specified percentile value (e.g., 25th percentile).
+Date Functions
+DATEPART('year', [Date Field])
+Extracts the year from a date field.
+Fig 10.3.1
+Diagnostic Analytics
+The goal of diagnostic analytics in HR analytics using Tableau is to comprehend the causes of particular patterns and trends seen in the data. This entails examining the connections and associations among many factors in order to pinpoint the fundamental reasons behind the actions and results of the workforce. For instance, one can ascertain the influence of job satisfaction on employee performance or pinpoint the causes of high employee turnover rates in particular departments by utilising regression analysis and scatter plots. HR professionals can better understand why particular departments have greater absenteeism rates or what motivates employees by using diagnostic analytics.
+Difference from Mean
+[Numeric Field] - WINDOW_AVG([Numeric Field])
+Computes the difference between a data point and the average value of a window of data points, helpful in identifying deviations from the mean.
+Ranking
+RANK_UNIQUE(SUM([Numeric Field]), 'desc')
+Assigns a rank to data points based on their values, useful for identifying top performers or outliers.
+Correlation
+CORR([Numeric Field 1], [Numeric Field 2])
+Calculates the correlation coefficient between two numerical variables, indicating the strength and direction of their relationship.
+Trend Analysis
+LINEARREG_SLOPE([Numeric Field], INDEX())
+Computes the slope of a linear regression line to analyze trends in data over time or across categories.
+Pattern Recognition
+IF [Numeric Field] > LOOKUP([Numeric Field], -1) THEN 'Increasing' ELSEIF [Numeric Field] < LOOKUP([Numeric Field], -1) THEN 'Decreasing' ELSE 'Stable' END
+Categorizes data points based on their relationship with previous values, aiding in pattern recognition.
+Outlier Detection
+IF ABS([Numeric Field] - WINDOW_MEDIAN([Numeric Field])) > (3 * WINDOW_STDEV([Numeric Field])) THEN 'Outlier' ELSE 'Normal' END
+Flags data points as outliers based on their deviation from the median and standard deviation of a window of data.
+Fig 10.4.1
+Fig 10.4.2
+Fig 10.4.3
+Predictive Analytics
+Using historical data, predictive analysis in HR analytics using Tableau forecasts future workforce patterns and behaviours. Utilising statistical models and machine learning algorithms, this analytical method makes predictions about performance levels, staff turnover, and future hiring requirements. For instance, predictive models can determine the probability of employees quitting the company in the near future by examining historical turnover rates and linking them to factors like tenure, job satisfaction, and department. With the use of these data, HR managers can optimise personnel management, prepare for future workforce requirements, and develop retention measures to proactively address possible problems.
+Linear Regression
+LINEARREG([Numeric Field], [Predictor Field])
+Performs linear regression analysis to predict a numerical outcome based on a predictor variable.
+Linear Regression
+LINEARREG([Numeric Field], [Predictor Field])
+Performs linear regression analysis to predict a numerical outcome based on a predictor variable.
+Exponential Smoothing
+EXPONENTIALSMOOTH([Numeric Field], 0.3)
+Applies exponential smoothing to time series data to predict future values based on past observations.
+Moving Average
+WINDOW_AVG([Numeric Field], -3, 0)
+Calculates the moving average of a numerical field over a specified window, useful for smoothing data and identifying trends.
+Time Series Forecast
+SCRIPT_REAL('forecast([Numeric Field], 3)', [Date Field])
+Uses a custom R or Python script to generate time series forecasts based on historical data.
+Seasonal Decomposition
+SCRIPT_REAL('decompose([Numeric Field], "multiplicative")', [Date Field])
+Decomposes time series data into seasonal, trend, and residual components for forecasting seasonal patterns.
+ARIMA Forecast
+SCRIPT_REAL('arima_forecast([Numeric Field], 3)', [Date Field])
+Applies an Autoregressive Integrated Moving Average (ARIMA) model to generate forecasts based on time series data.
+Neural Network Predictions
+SCRIPT_REAL('neural_network_predict([Input Fields], [Output Field], 3)', [Date Field])
+Utilizes a neural network model to make predictions based on input variables and historical data.
+Time Series Growth Rate
+(LOOKUP([Numeric Field], -1) - LOOKUP([Numeric Field], -2)) / LOOKUP([Numeric Field], -2)
+Calculates the growth rate of a time series data point, which can be used for predictive analysis.
+Fig 10.5.1
+Interactive Dashboards
+Users can explore, analyse, and derive insights from HR data in real-time with the use of interactive dashboards in HR Analytics utilising Tableau, which are dynamic data visualisation tools. By enabling users to engage with the data, apply filters, delve into particular aspects, and alter perspectives to suit their needs, these dashboards go beyond simple reports. For instance, HR professionals can monitor important HR indicators like diversity data, recruiting trends,
+performance scores, and employee attrition rates using interactive dashboards. They can perform in-depth studies and spot trends or anomalies by filtering data by a variety of parameters, including department, employment function, location, and time period.
+Employee Count
+This is usually a simple count of rows in the dataset representing employees.
+Attrition Rate
+Attrition Rate = (Number of Attritions\Average Number of Employees)
+*100
+Average Age
+This could be an average of the 'Age' field in the dataset, calculated as
+Average Age = (Sum of all employees' ages\Number of employees)
+Fig 10.6.1
+Fig 10.6.2
+Fig 10.6.3
+DISCUSSION
+DISCUSSION
+A comprehensive analysis of key metrics and insights can be drawn to understand the dynamics of the workforce within the organization. Here's a detailed conclusion based on the visual data presented:
+The company has a total of 572 employees, with an attrition rate of 17.31%, indicating a significant number of employees leaving the company. This high attrition rate warrants further investigation into the causes to develop strategies for improving employee retention. The Sales department stands out with the highest attrition percentage, suggesting specific challenges within that department that require attention.
+In terms of demographics, the majority of employees fall within the 31-35 age range, with an average age of 36 years. This generational makeup is crucial for understanding company culture and succession planning. Additionally, employees from the Life Sciences and Medical fields show higher retention rates compared to other educational backgrounds, which can influence hiring strategies and professional development programs.
+Gender-wise analysis reveals that younger employees, particularly those under 18 years old, have a higher attrition rate regardless of gender. Although this group is relatively small, addressing their concerns could contribute to overall retention efforts.
+The dashboard also highlights key HR activities such as analytics conducted, disciplinary incidents, dismissals, promotions, and transfers, providing a holistic view of HR operations and outcomes.
+Overall, the HR Analytics Dashboard serves as a strategic tool for HR to monitor, analyse, and make informed decisions to improve employee retention and satisfaction. It's essential to delve deeper into each metric, understand the underlying causes, and take appropriate actions. This comprehensive analysis enables the company to develop targeted initiatives, enhance job satisfaction, address department-specific challenges, and create a positive and productive work environment.
+CONCLUSION & FUTURE ENHANCEMENT
+CONCLUSION & FUTURE ENHANCEMENT
+Conclusion
+The company may improve its HRM procedures with the strategic information and insightful insights from the Tableau-powered HR Analytics project. Through data visualisation and analysis, the initiative has effectively transformed unprocessed HR data into insights that can beputtouse.
+A deeper understanding of important HR parameters, including staff numbers, attrition rates, active employees, average age, attrition by gender, department-wise attrition, and more, has been made possible by the extensive dashboard built in Tableau. HR professionals may now see trends, patterns, and possible areas for workforce enhancement thanks to these analytics. The dashboard analysis produced a number of important conclusions. Targeted retention measures and interventions are necessary, as evidenced by the high turnover rate, especially in the sales sector. The age distribution and educational background of the workforce has given insights into workforce planning, successionmanagement, and talent development programmes.
+The dashboard has also provided insight into gender-specific attrition rates and job satisfaction scores, highlighting the significance of programmes promoting diversity and inclusion and cultivatingapleasantworkenvironment.
+The project's capacity to convert complex HR data into visually appealing and easily understood formats is what makes it successful in enabling decision-makers to make well- informed decisions that increase employee engagement, boost retention rates, and ultimately contribute to the success of the company as a whole.
+Maintaining a high-performing and engaged staff will need proactive interventions based on data-driven insights and constant monitoring of HR KPIs. The HR Analytics initiative has created a culture of data-driven decision-making inside the company and established a solid foundation for future HR strategy development.
+Future Scope
+The HR Analytics project using Tableau has significant potential for future enhancements and expansions. Some of the key areas of future scope for this project include:
+Predictive Analytics: Incorporating predictive modelling and machine learning algorithms into the dashboard to forecast employee turnover, identify attrition drivers in advance, and predict future talent needs. This will enable HR to take proactive measures and implement targeted retention strategies.
+Sentiment Analysis: Integrating sentiment analysis tools to analyse employee feedback, survey responses, and social media sentiment. This will provide real-time insights into employee morale, engagement levels, and sentiment towards company policies and initiatives.
+Workforce Planning: Enhancing workforce planning capabilities by integrating workforce analytics, demand forecasting, and scenario planning. This will help HR in optimizing staffing levels, identifying skill gaps, and aligning workforce strategies with business objectives.
+Employee Performance Analytics: Developing advanced performance analytics dashboards to track individual and team performance metrics, set performance benchmarks, and identify top performers for talent development and succession planning.
+Employee Engagement: Implementing engagement analytics to measure employee engagement levels, identify drivers of engagement, and design targeted engagement programs. This can include analysing factors such as job satisfaction, work-life balance, recognition, and career growth opportunities.
+REFERENCES
+REFERENCES
+DiClaudio, M. (2019). People analytics and the rise of HR: how data, analytics and emerging technology can transform human resources (HR) into a profit center. Strategic HR Review, 18(2), 42–46. https://doi.org/10.1108/shr-11-2018-0096.
+Journal of Applied Psychology. (n.d.). https://www.apa.org. https://www.apa.org/pubs/journals/apl/
+Journal of Business and Psychology. (2024, May 29). SpringerLink. https://link.springer.com/journal/10869
+Dashboards. (n.d.). Tableau. https://help.tableau.com/current/pro/desktop/en- us/dashboards.htm
+https://www.tableau.com/learn
+https://www.datacamp.com/tutorial/tableau-tutorial-for-beginners

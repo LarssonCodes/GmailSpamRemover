@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, precision_score, recall_score
 import joblib
 
 def train():
@@ -40,7 +40,14 @@ def train():
     # Evaluation
     print("Evaluating model...")
     y_pred = model.predict(X_test_vec)
-    print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    
+    print(f"Accuracy = {acc*100:.2f}%")
+    print(f"Precision = {prec*100:.2f}%")
+    print(f"Recall = {rec*100:.2f}%")
+    
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
     
